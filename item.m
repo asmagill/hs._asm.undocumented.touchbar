@@ -174,7 +174,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                                               modifierFlags:event.modifierFlags
                                                   timestamp:event.timestamp
                                                windowNumber:event.windowNumber
-                                                    context:event.context
+                                                    context:nil
                                                 eventNumber:(virtualMouseEventCounter++)
                                                  clickCount:1
                                                    pressure:1.0] ;
@@ -216,7 +216,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                                                   modifierFlags:event.modifierFlags
                                                       timestamp:event.timestamp
                                                    windowNumber:event.windowNumber
-                                                        context:event.context
+                                                        context:nil
                                                     eventNumber:(virtualMouseEventCounter++)
                                                      clickCount:1
                                                        pressure:1.0] ;
@@ -227,7 +227,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                                                       modifierFlags:event.modifierFlags
                                                           timestamp:event.timestamp
                                                        windowNumber:event.windowNumber
-                                                            context:event.context
+                                                            context:nil
                                                         eventNumber:(virtualMouseEventCounter++)
                                                      trackingNumber:0
                                                            userData:nil] ;
@@ -259,7 +259,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                                               modifierFlags:event.modifierFlags
                                                   timestamp:event.timestamp
                                                windowNumber:event.windowNumber
-                                                    context:event.context
+                                                    context:nil
                                                 eventNumber:(virtualMouseEventCounter++)
                                                  clickCount:0
                                                    pressure:0.0] ;

@@ -165,7 +165,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
         _callbackRef   = LUA_NOREF ;
         _selfRefCount  = 0 ;
 
-        self.styleMask                  = NSTitledWindowMask | NSFullSizeContentViewWindowMask ;
+        self.styleMask                  = NSWindowStyleMaskTitled | NSWindowStyleMaskFullSizeContentView ;
         self.titlebarAppearsTransparent = YES ;
         self.titleVisibility            = NSWindowTitleHidden ;
         self.movable                    = NO ;
@@ -179,7 +179,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
         self.backgroundColor            = [NSColor blackColor] ;
 
         [self standardWindowButton:NSWindowCloseButton].hidden       = YES ;
-        [self standardWindowButton:NSWindowFullScreenButton].hidden  = YES ;
+        [self standardWindowButton:NSWindowZoomButton].hidden        = YES ;
         [self standardWindowButton:NSWindowZoomButton].hidden        = YES ;
         [self standardWindowButton:NSWindowMiniaturizeButton].hidden = YES ;
         [self _setPreventsActivation:YES] ;

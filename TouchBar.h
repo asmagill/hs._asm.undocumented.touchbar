@@ -1,4 +1,4 @@
-#import <AppKit/AppKit.h>
+@import AppKit ;
 
 // Undocumented functions to display mock touchbar for non-touchbar equipped systems
 
@@ -6,9 +6,9 @@
 extern CGDisplayStreamRef SLSDFRDisplayStreamCreate(void *, dispatch_queue_t, CGDisplayStreamFrameAvailableHandler) ;
 // part of DFRFoundation private framework
 extern BOOL   DFRSetStatus(int) ;
-extern int    DFRGetStatus() ;
+extern int    DFRGetStatus(void) ;
 extern BOOL   DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p) ;
-extern CGSize DFRGetScreenSize() ;
+extern CGSize DFRGetScreenSize(void) ;
 
 // Undocumented functions and methods to access the system touchbar
 
@@ -58,9 +58,9 @@ extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 + (void)dismissSystemModalTouchBar:(NSTouchBar *)touchBar NS_AVAILABLE_MAC(10.14);
 
 // macOS 10.13 and below
-+ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14);
-+ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
-+ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
++ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14, "Pre Mojave");
++ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14, "Pre Mojave");
++ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14, "Pre Mojave");
 
 @end
 
@@ -72,9 +72,9 @@ extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 + (void)dismissSystemModalTouchBar:(NSTouchBar *)touchBar NS_AVAILABLE_MAC(10.14);
 
 // macOS 10.13 and below
-+ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14);
-+ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
-+ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14);
++ (void)presentSystemModalFunctionBar:(NSTouchBar *)touchBar systemTrayItemIdentifier:(NSTouchBarItemIdentifier)identifier NS_DEPRECATED_MAC(10.12.2, 10.14, "Pre Mojave");
++ (void)minimizeSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14, "Pre Mojave");
++ (void)dismissSystemModalFunctionBar:(NSTouchBar *)touchBar NS_DEPRECATED_MAC(10.12.2, 10.14, "Pre Mojave");
 
 @end
 

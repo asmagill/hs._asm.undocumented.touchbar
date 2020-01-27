@@ -136,7 +136,7 @@ static NSDictionary *builtInIdentifiers ;
 static BOOL itemWithIdentifierExists(NSTouchBar *bar, NSString *identifier, BOOL includeBuiltIn) {
     __block BOOL found = includeBuiltIn && (builtInIdentifiers && [builtInIdentifiers.allValues containsObject:identifier]) ;
     if (!found) {
-        found = [[bar.templateItems.allObjects valueForKey:@"identifier"] containsObject:identifier] ;
+        found = [(NSArray *)[bar.templateItems.allObjects valueForKey:@"identifier"] containsObject:identifier] ;
     }
     return found ;
 }
@@ -454,7 +454,7 @@ static int touchbar_templateItems(lua_State *L) {
             __block NSMutableArray *identifiers   = [[NSMutableArray alloc] init] ;
             __block NSMutableSet   *touchbarItems = [[NSMutableSet alloc] init] ;
             [itemArray enumerateObjectsUsingBlock:^(id obj2, NSUInteger idx, BOOL *stop) {
-                if ([obj2 isKindOfClass:[NSTouchBarItem class]]) {
+                if ([(NSObject *)obj2 isKindOfClass:[NSTouchBarItem class]]) {
                     NSTouchBarItem *theItem = obj2 ;
                     [touchbarItems addObject:theItem] ;
                     [identifiers   addObject:theItem.identifier] ;
