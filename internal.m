@@ -98,7 +98,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
         }) ;
 
         // Enables applications to put things into the touch bar
-        DFRSetStatus(2) ;
+//         DFRSetStatus(2) ;
 
         // Likewise, CGDisplayStreamStop will pause updates
         CGDisplayStreamStart(_stream) ;
@@ -243,6 +243,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 static int touchbar_new(__unused lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBREAK] ;
+    DFRSetStatus(DFRGetStatus() | 2) ;
     [skin pushNSObject:[ASMTouchBarWindow new]] ;
     return 1 ;
 }
@@ -692,7 +693,7 @@ static int userdata_gc(lua_State* L) {
 static int meta_gc(lua_State* __unused L) {
     // Under the assumption that this will already be 2 when the module loads on a machine with an
     // actual Touch Bar, we reset it to whatever it was when this module was first loaded.
-    DFRSetStatus(initialDFRStatus) ;
+    if (DFRGetStatus() != initialDFRStatus) DFRSetStatus(initialDFRStatus) ;
     return 0 ;
 }
 
@@ -721,7 +722,6 @@ static const luaL_Reg userdata_metaLib[] = {
 static luaL_Reg moduleLib[] = {
     {"new",     touchbar_new},
     {"enabled", touchbar_enabled},
-//     {"size",    touchbar_screenSize},
 
     {NULL,        NULL}
 } ;
@@ -745,7 +745,7 @@ int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* __unused L) {
     initialDFRStatus = DFRGetStatus() ;
 
     // Makes DFRGetScreenSize return the correct values
-    DFRSetStatus(2) ;
+//     DFRSetStatus(2) ;
 
     [skin registerPushNSHelper:pushASMTouchBarWindow         forClass:"ASMTouchBarWindow"] ;
     [skin registerLuaObjectHelper:toASMTouchBarWindowFromLua forClass:"ASMTouchBarWindow"

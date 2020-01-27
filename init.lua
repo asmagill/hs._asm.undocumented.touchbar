@@ -19,6 +19,7 @@ local module     = require(USERDATA_TAG .. ".internal")
 module.supported = wrapper.supported
 module.item      = require(USERDATA_TAG .. ".item")
 module.bar       = require(USERDATA_TAG .. ".bar")
+module._debug    = require(USERDATA_TAG .. ".debug")
 
 local basePath = package.searchpath(USERDATA_TAG, package.path)
 if basePath then

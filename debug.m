@@ -12,10 +12,18 @@ static int refTable = LUA_NOREF;
 
 #pragma mark - Module Functions
 
-static int debug_dfrgetstatus(lua_State *L) {
+static int debug_dfrGetStatus(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBREAK] ;
     lua_pushinteger(L, DFRGetStatus()) ;
+    return 1 ;
+}
+
+static int debug_dfrSetStatus(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TNUMBER | LS_TINTEGER, LS_TBREAK] ;
+
+    lua_pushboolean(L, DFRSetStatus((int)lua_tointeger(L, 1))) ;
     return 1 ;
 }
 
@@ -31,7 +39,8 @@ static int debug_touchbarSize(lua_State __unused *L) {
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
-    {"dfrGetStatus", debug_dfrgetstatus},
+    {"dfrGetStatus", debug_dfrGetStatus},
+    {"dfrSetStatus", debug_dfrSetStatus},
     {"touchbarSize", debug_touchbarSize},
     {NULL,           NULL}
 };
