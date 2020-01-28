@@ -3,14 +3,13 @@
 
 /// === hs._asm.undocumented.touchbar.item ===
 ///
-/// This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.
+/// This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar.virtual`.
 ///
 /// At present, only simple button type items are supported.
 ///
-/// This module requires macOS 10.12.2 or later. Some of the methods (identified in their notes) in this module use undocumented functions and/or framework methods and are not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
+/// This module is very experimental and is still under development, so the exact functions and methods may be subject to change without notice.
 ///
-/// This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
-///
+/// This module is based partially on some of the code examples and links referred to in the discussion at https://github.com/Hammerspoon/hammerspoon/issues/1096.
 
 // TODO:
 //  * more functions to modify button style/appearance? attributed string support? background color? width?
@@ -350,7 +349,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
     }
 }
 
-// override this so we can adjust toolbar selfRefCounts in one place rather than everywhere it might be set
+// override this so we can adjust touchbar selfRefCounts in one place rather than everywhere it might be set
 - (void)setGroupTouchBar:(NSTouchBar *)groupTouchBar {
     NSTouchBar *currentTouchBar = self.groupTouchBar ;
 

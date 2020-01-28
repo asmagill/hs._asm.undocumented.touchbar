@@ -4,14 +4,13 @@
 
 /// === hs._asm.undocumented.touchbar.bar ===
 ///
-/// This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.
+/// This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar.virtual`.
 ///
-/// At present, bar objects can be presented modally under Hammerspoon control but cannot be attached directly to the Hammerspoon console or webview objects to dynamically appear as application focus changes; this is expected to change in the future.
+/// At present, bar objects can be presented modally under Hammerspoon control but cannot be attached directly to the Hammerspoon console or webview objects to dynamically appear as application focus changes; this may change in the future.
 ///
-/// This module requires macOS 10.12.2 or later. Some of the methods (identified in their notes) in this module use undocumented functions and/or framework methods and are not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
+/// This module is very experimental and is still under development, so the exact functions and methods may be subject to change without notice.
 ///
-/// This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
-///
+/// This module is based partially on some of the code examples and links referred to in the discussion at https://github.com/Hammerspoon/hammerspoon/issues/1096.
 
 // TODO:
 //  * touch bars for the console and webviews

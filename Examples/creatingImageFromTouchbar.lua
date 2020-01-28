@@ -7,7 +7,7 @@
 
 local tb = require("hs._asm.undocumented.touchbar")
 
-local mb = tb.new():streaming(true)
+local mb = tb.virtual.new():streaming(true)
 
 -- we need to wait until streaming can begin and a full context can be generated, maybe
 -- a second or two...

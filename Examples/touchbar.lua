@@ -64,8 +64,8 @@ end
 
 local createTouchbarIfNeeded = function()
     if not module.touchbar then
-        module.touchbar = touchbar.new():inactiveAlpha(module.inactiveAlpha)
-                                        :setCallback(touchbarWatcher)
+        module.touchbar = touchbar.virtual.new():inactiveAlpha(module.inactiveAlpha)
+                                                :setCallback(touchbarWatcher)
         showNormalState()
     end
 end

@@ -1,26 +1,23 @@
 hs._asm.undocumented.touchbar.item
 ==================================
 
-This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.
+This module is used to create and manipulate touchbar item objects which can added to `hs._asm.undocumented.touchbar.bar` objects and displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar.virtual`.
 
 At present, only simple button type items are supported.
 
-This module requires macOS 10.12.2 or later. Some of the methods (identified in their notes) in this module use undocumented functions and/or framework methods and are not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
+This module is very experimental and is still under development, so the exact functions and methods may be subject to change without notice.
 
-This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
-
-TODO:
- * More item types
- * more functions to modify button style/appearance? attributed string support? background color? width?
-   * Why does popover fail to show expanded items?  I think fixing this will also allow colorPicker and sharingService to work
-   * try minimizing while popover is supposed to show, maybe because we're already a "pop over" and it would work with "Hammerspoon application" touchbars?
- * get canvas max width ala `canvasItem("view")("window")("frame").w`... can we get without creating canvas item first?
+This module is based partially on some of the code examples and links referred to in the discussion at https://github.com/Hammerspoon/hammerspoon/issues/1096.
 
 See [Examples/quickanddirtyBarExample.lua](Examples/quickanddirtyBarExample.lua) for a *very* basic example.
 
+### Installation
+
+You can install the entire module and its submodules as described in [README.md](README.md).
+
 ### Usage
 ~~~lua
-item = require("hs._asm.undocumented.touchbar.item")
+item = require("hs._asm.undocumented.touchbar").item
 ~~~
 
 ### Contents
@@ -571,7 +568,7 @@ Predefined values are as follows:
 
 >     The MIT License (MIT)
 >
-> Copyright (c) 2017 Aaron Magill
+> Copyright (c) 2020 Aaron Magill
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 >

@@ -1,23 +1,23 @@
 hs._asm.undocumented.touchbar.bar
 =================================
 
-This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar`.
+This module is used to create and manipulate bar objects which can be displayed in the Touch Bar of new Macintosh Pro laptops or with the virtual Touch Bar provided by `hs._asm.undocumented.touchbar.virtual`.
 
-At present, bar objects can be presented modally under Hammerspoon control but cannot be attached directly to the Hammerspoon console or webview objects to dynamically appear as application focus changes; this is expected to change in the future.
+At present, bar objects can be presented modally under Hammerspoon control but cannot be attached directly to the Hammerspoon console or webview objects to dynamically appear as application focus changes; this may change in the future.
 
-This module requires macOS 10.12.2 or later. Some of the methods (identified in their notes) in this module use undocumented functions and/or framework methods and are not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
+This module is very experimental and is still under development, so the exact functions and methods may be subject to change without notice.
 
-This module is very experimental and is still under development, so the exact functions and methods are subject to change without notice.
-
-TODO:
- * touch bars for the console and webviews
- * rework orginization so bar in root, current root in `virtual`
+This module is based partially on some of the code examples and links referred to in the discussion at https://github.com/Hammerspoon/hammerspoon/issues/1096.
 
 See [Examples/quickanddirtyBarExample.lua](Examples/quickanddirtyBarExample.lua) for a *very* basic example.
 
+### Installation
+
+You can install the entire module and its submodules as described in [README.md](README.md).
+
 ### Usage
 ~~~lua
-bar = require("hs._asm.undocumented.touchbar.bar")
+bar = require("hs._asm.undocumented.touchbar").bar
 ~~~
 
 ### Contents
@@ -359,7 +359,7 @@ The following is ignored for modally displayed bars, so it's effects are still b
 
 >     The MIT License (MIT)
 >
-> Copyright (c) 2017 Aaron Magill
+> Copyright (c) 2020 Aaron Magill
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 >
