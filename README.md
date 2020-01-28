@@ -1,7 +1,7 @@
 hs._asm.undocumented.touchbar
 =============================
 
-*** WARNING: Breaking Change ***
+***WARNING: Breaking Change***
 
 Version 0.8.0alpha moves the creation of the virtual touchbar into the submodule `hs._asm.undocumented.touchbar.virtual` and will require any use of `hs._asm.undocumented.touchbar.new()` to be changed to `hs._asm.undocumented.touchbar.virtual.new()`. This should *only* affect the usage of the virtual touchbar, either for display on the screen or for taking images of the touchbar itself.
 
@@ -23,6 +23,7 @@ Bug fixes and feature updates are always welcome and can be submitted at https:/
 
 This module is very experimental and is still under development, so the exact functions and methods may be subject to change without notice.
 
+ Special thanks to @cmsj and @latenitefilms for code samples and bugfixes, and to @randomeizer, @Madd0g, and @medranocalvo for tests and reports. This is by no means a conclusive list, and if I've left anyone out, it's totally on me -- feel free to poke me with a (virtual) stick 😜.
 
 ### Installation
 

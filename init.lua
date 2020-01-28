@@ -12,6 +12,8 @@
 --- Bug fixes and feature updates are always welcome and can be submitted at https://github.com/asmagill/hs._asm.undocumented.touchbar.
 ---
 --- This module is very experimental and is still under development, so the exact functions and methods may be subject to change without notice.
+---
+--- Special thanks to @cmsj and @latenitefilms for code samples and bugfixes, and to @randomeizer, @Madd0g, and @medranocalvo for tests and reports. This is by no means a conclusive list, and if I've left anyone out, it's totally on me -- feel free to poke me with a (virtual) stick 😜.
 
 local USERDATA_TAG = "hs._asm.undocumented.touchbar"
 local module       = require(USERDATA_TAG .. ".internal")
