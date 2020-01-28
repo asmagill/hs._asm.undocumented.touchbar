@@ -592,10 +592,10 @@ static int touchbar_virtual_setCallback(lua_State *L) {
 ///  * By default, the virtual touchbar is only receiving upates when it is visible on the screen -- [hs._asm.undocumented.touchbar.virtual:show](#show). If you wish to take a snapshot of the virtual touchbar but do not want it to be visible on the screen, you must invoke [hs._asm.undocumented.touchbar.virtual:streaming(true)](#streaming) before using this method.
 ///    * Note that it may take a second or two after invoking [hs._asm.undocumented.touchbar.virtual:streaming(true)](#streaming) before the first image can be made, so you should check that the return value is not `nil` before using the image; you can use something like the following:
 ///
-///        myTouchbar = require("hs._asm.undocumented.touchbar").viritual.new():streaming(true)
-///        hs.timer.waitUntil(function() return myTouchbar:image() end, function()
-///           -- whatever you need now that images can be captured
-///        end)
+///          myTouchbar = require("hs._asm.undocumented.touchbar").viritual.new():streaming(true)
+///          hs.timer.waitUntil(function() return myTouchbar:image() end, function()
+///             -- whatever you need now that images can be captured
+///          end)
 ///
 ///    * Once streaming has been enabled and the first image is received, subsequent image requests will continue to succeed until streaming is stopped with [hs._asm.undocumented.touchbar.virtual:streaming(false)](#streaming) or [hs._asm.undocumented.touchbar.virtual:hide()](#hide).
 static int touchbar_virtual_asImage(lua_State *L) {
