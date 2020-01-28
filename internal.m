@@ -97,9 +97,6 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 
         }) ;
 
-        // Enables applications to put things into the touch bar
-//         DFRSetStatus(2) ;
-
         // Likewise, CGDisplayStreamStop will pause updates
         CGDisplayStreamStart(_stream) ;
 
@@ -243,7 +240,12 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 static int touchbar_new(__unused lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBREAK] ;
-    DFRSetStatus(DFRGetStatus() | 2) ;
+
+    // All examples of the virtual touchbar set this to 2 to enable, but sampling a few users machines that come with the touchbar,
+    // it seems like the machines with a physical touchbar have the value at 3; however, forcing it to 2 on the 16" models borks the
+    // touchbar (it didn't seem to affect anything with the earlier models, even though they're also reporting 3) so, lets only set it
+    // when the machine doesn't have a physical touchbar at all...
+    if ((initialDFRStatus & 0x01) == 0) DFRSetStatus(2) ;
     [skin pushNSObject:[ASMTouchBarWindow new]] ;
     return 1 ;
 }
@@ -266,12 +268,10 @@ static int touchbar_enabled(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
-    // 2 allows apps to put things into the touchbar, 0 disables this.
-    // System icons are still present, though.
-    // other numbers seem to have no effect -- bit 1 seems to be the toggle.
-    // check with DFRGetStatus() always seems to return 0 or 2, but we'll treat
-    // as bitfield just in case I'm wrong...
-
+    // best guess right now is that DFRStatus value is a bitfield
+    //      bit 0 indicates if touchbar is physical (1) or virtual  (0)
+    //      bit 1 indicates if touchbar is enabled  (1) or disabled (0)
+    // but I stress this is *only* a guess based upon a very small sample size
     if (lua_gettop(L) == 1) {
         lua_pushboolean(L, DFRSetStatus(lua_toboolean(L, 1) ? (DFRGetStatus() | 2) : (DFRGetStatus() & ~2))) ;
     } else {
@@ -691,8 +691,7 @@ static int userdata_gc(lua_State* L) {
 }
 
 static int meta_gc(lua_State* __unused L) {
-    // Under the assumption that this will already be 2 when the module loads on a machine with an
-    // actual Touch Bar, we reset it to whatever it was when this module was first loaded.
+    // here we just want to go back to whatever state we were in before this module loaded
     if (DFRGetStatus() != initialDFRStatus) DFRSetStatus(initialDFRStatus) ;
     return 0 ;
 }
@@ -740,12 +739,7 @@ int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* __unused L) {
                                  metaFunctions:module_metaLib
                                objectFunctions:userdata_metaLib] ;
 
-// On the assumption that when this module first loads, this will be 0 on machines without
-// a touch bar and 2 on machines with a touch bar, save what it actually is for the meta_gc
     initialDFRStatus = DFRGetStatus() ;
-
-    // Makes DFRGetScreenSize return the correct values
-//     DFRSetStatus(2) ;
 
     [skin registerPushNSHelper:pushASMTouchBarWindow         forClass:"ASMTouchBarWindow"] ;
     [skin registerLuaObjectHelper:toASMTouchBarWindowFromLua forClass:"ASMTouchBarWindow"
