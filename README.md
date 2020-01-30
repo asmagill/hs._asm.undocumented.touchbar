@@ -70,6 +70,7 @@ touchbar = require("hs._asm.undocumented.touchbar")
 ##### Module Functions
 * <a href="#exists">touchbar.exists() -> boolean</a>
 * <a href="#physical">touchbar.physical() -> boolean</a>
+* <a name="size"></a>touchbar.size() -> sizeTable</a>
 * <a href="#supported">touchbar.supported([showLink]) -> boolean</a>
 
 - - -
