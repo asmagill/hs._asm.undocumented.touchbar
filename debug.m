@@ -12,18 +12,13 @@ static int refTable = LUA_NOREF;
 
 #pragma mark - Module Functions
 
-static int debug_dfrGetStatus(lua_State *L) {
+static int debug_dfrStatus(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TBREAK] ;
+    [skin checkArgs:LS_TNUMBER | LS_TINTEGER | LS_TOPTIONAL, LS_TBREAK] ;
+    if (lua_gettop(L) > 0) {
+        DFRSetStatus((int)lua_tointeger(L, 1)) ;
+    }
     lua_pushinteger(L, DFRGetStatus()) ;
-    return 1 ;
-}
-
-static int debug_dfrSetStatus(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
-    [skin checkArgs:LS_TNUMBER | LS_TINTEGER, LS_TBREAK] ;
-
-    lua_pushboolean(L, DFRSetStatus((int)lua_tointeger(L, 1))) ;
     return 1 ;
 }
 
@@ -35,13 +30,32 @@ static int debug_touchbarSize(lua_State __unused *L) {
     return 1 ;
 }
 
+static int debug_dfrCopyAttributes(__unused lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TBREAK] ;
+
+    NSDictionary *attributes = (__bridge_transfer NSDictionary *)DFRCopyAttributes() ;
+    [skin pushNSObject:attributes] ;
+    return 1 ;
+}
+
+static int debug_dfrElementGetScaleFactor(lua_State *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TBREAK] ;
+    lua_pushnumber(L, DFRElementGetScaleFactor()) ;
+    return 1 ;
+}
+
+
 #pragma mark - Hammerspoon/Lua Infrastructure
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
-    {"dfrGetStatus", debug_dfrGetStatus},
-    {"dfrSetStatus", debug_dfrSetStatus},
-    {"touchbarSize", debug_touchbarSize},
+    {"dfrStatus",   debug_dfrStatus},
+    {"size",        debug_touchbarSize},
+    {"attributes",  debug_dfrCopyAttributes},
+    {"scaleFactor", debug_dfrElementGetScaleFactor},
+
     {NULL,           NULL}
 };
 

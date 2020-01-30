@@ -563,7 +563,7 @@ static int slidertouchbaritem_newSlider(lua_State *L) {
 ///  * a touchbarItemObject or nil if an error occurs
 ///
 /// Notes:
-///  * The touch bar object will be proportionally resized so that it has a height of 30 if it does not already.
+///  * The touch bar object will be proportionally resized so that it has the same height as the touchbar if it does not already. Currently this is 30, but in case future models differ from this, you can get the current value with from `hs._asm.undocumented.touchbar.size`.
 ///  * If canvas callbacks for `mouseDown`, `mouseUp`, `mouseEnterExit`, and `mouseMove` are enabled, the canvas callback will be invoked as if the left mouse button had been used.
 static int customtouchbaritem_newCanvas(lua_State *L) {
     LuaSkin      *skin       = [LuaSkin shared] ;
@@ -575,8 +575,10 @@ static int customtouchbaritem_newCanvas(lua_State *L) {
     HSASMCustomTouchBarItem *obj = [[HSASMCustomTouchBarItem alloc] initItemType:TBIT_canvas withIdentifier:identifier] ;
 
     if (obj) {
-        NSRect canvasFrame = canvas.frame ;
-        NSRect itemFrame   = NSMakeRect(0, 0, canvasFrame.size.width * 30 / canvasFrame.size.height, 30) ;
+        NSRect  canvasFrame = canvas.frame ;
+        CGSize  tbSize      = DFRGetScreenSize() ;
+        CGFloat tbHeight    = tbSize.height ;
+        NSRect  itemFrame   = NSMakeRect(0, 0, canvasFrame.size.width * tbHeight / canvasFrame.size.height, tbHeight) ;
 
         CanvasWrapper *itemWrapper = [[CanvasWrapper alloc] initWithFrame:itemFrame] ;
         itemWrapper.target = obj ;

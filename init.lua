@@ -3,7 +3,7 @@
 ---
 --- This module and its submodules provide support for manipulating the Apple Touch Bar on newer Macbook Pro laptops. For machines that do not have a touchbar, the `hs._asm.undocumented.touchbar.virtual` submodule provides a method for mimicing one on screen.
 ---
---- Use of this module with virtual touchbar devices other than `hs._asm.undocumented.touchbar.virtual` has not been tested extensively, but should work. I have not run into any problems or issues with [Duet Display](https://www.duetdisplay.com), but specific testing has been minimal.
+--- Use of this module and its submodules in conunction with other third party applications that can create the virtual touchbar has not been tested specifically, but *should* work. I have not run into any problems or issues while using [Duet Display](https://www.duetdisplay.com), but haven't performed extensive testing.
 ---
 --- This module and it's submodules require a mac that is running macOS 10.12.1 build 16B2657 or newer. If you wish to use this module in an environment where the end-user's machine may not have a new enough macOS release version, you should always check the value of [hs._asm.undocumented.touchbar.supported](#supported) before trying to create the Touch Bar and provide your own fallback or message. By supplying the argument `true` to this function, the user will be prompted to upgrade if necessary.
 ---

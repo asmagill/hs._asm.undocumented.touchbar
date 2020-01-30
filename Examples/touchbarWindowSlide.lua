@@ -5,7 +5,14 @@ local screen   = require("hs.screen")
 
 local module = {}
 
-local _c = canvas.new{x = 0, y = 0, h = 30, w = 150}
+-- to make sure that touchbar.size returns valid data even for a virtual touchbar, we need to create the touchbar now,
+-- even though we don't assign anything to it until the end
+
+local _b = touchbar.bar.new()
+
+local _h = touchbar.size().h
+
+local _c = canvas.new{x = 0, y = 0, h = _h, w = 150}
 _c[#_c + 1] = {
     type             = "rectangle",
     action           = "strokeAndFill",
@@ -19,12 +26,12 @@ _c[#_c + 1] = {
     action      = "stroke",
     strokeColor = { blue = 1, green = 1 },
     coordinates = {
-        { x =   0, y = 15 },
-        { x =  65, y = 15 },
-        { x =  70, y =  5 },
-        { x =  80, y = 25 },
-        { x =  85, y = 15 },
-        { x = 150, y = 15},
+        { x =   0, y = _h / 2 },
+        { x =  65, y = _h / 2 },
+        { x =  70, y =      5 },
+        { x =  80, y = _h - 5 },
+        { x =  85, y = _h / 2 },
+        { x = 150, y = _h / 2 },
     }
 }
 
@@ -57,7 +64,7 @@ _c:canvasMouseEvents(true, true, false, true):mouseCallback(function(o,m,i,x,y)
     end
 end)
 
-local _b = touchbar.bar.new():templateItems{ _i }:defaultIdentifiers{ _i:identifier() }:presentModalBar(true)
+_b:templateItems{ _i }:defaultIdentifiers{ _i:identifier() }:presentModalBar(true)
 
 module.canvas = _c
 module.item   = _i

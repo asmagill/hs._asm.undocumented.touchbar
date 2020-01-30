@@ -95,7 +95,7 @@ Returns:
  * a touchbarItemObject or nil if an error occurs
 
 Notes:
- * The touch bar object will be proportionally resized so that it has a height of 30 if it does not already.
+ * The touch bar object will be proportionally resized so that it has the same height as the touchbar if it does not already. Currently this is 30, but in case future models differ from this, you can get the current value with from `hs._asm.undocumented.touchbar.size`.
  * If canvas callbacks for `mouseDown`, `mouseUp`, `mouseEnterExit`, and `mouseMove` are enabled, the canvas callback will be invoked as if the left mouse button had been used.
 
 - - -

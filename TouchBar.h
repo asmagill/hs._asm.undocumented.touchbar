@@ -5,10 +5,13 @@
 // Part of SkyLight private Framework
 extern CGDisplayStreamRef SLSDFRDisplayStreamCreate(void *, dispatch_queue_t, CGDisplayStreamFrameAvailableHandler) ;
 // part of DFRFoundation private framework
-extern BOOL   DFRSetStatus(int) ;
-extern int    DFRGetStatus(void) ;
-extern BOOL   DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p) ;
-extern CGSize DFRGetScreenSize(void) ;
+extern BOOL            DFRSetStatus(int) ;
+extern int             DFRGetStatus(void) ;
+extern BOOL            DFRFoundationPostEventWithMouseActivity(NSEventType type, NSPoint p) ;
+extern CGSize          DFRGetScreenSize(void) ;
+
+extern CFDictionaryRef DFRCopyAttributes(void) ;
+extern CGFloat         DFRElementGetScaleFactor(void) ;
 
 // Undocumented functions and methods to access the system touchbar
 

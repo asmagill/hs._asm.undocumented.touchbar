@@ -56,7 +56,8 @@ idleCallback = function(o)
         idle:transformation(nil)
     else
         local w = o:canvasWidth() / 2
-        local h = 15 -- we know that the touchbar gives us a hight of 30 to work with, since we need half for rotation, use 15 here
+        -- currently we've only seen the height be 30, so we could hardcode this at 15, but in case it changes in future models
+        local h = tb.size().h / 2
         idle:transformation(hs.canvas.matrix.translate(w, h):rotate(90):translate(-w, -h))
     end
 end

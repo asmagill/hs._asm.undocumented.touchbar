@@ -1,19 +1,27 @@
 hs._asm.undocumented.touchbar
 =============================
 
-***WARNING: Breaking Change***
+***Changelog (primarily breaking or significant changes)***
+
+**v08.1alpha**
+
+* `touchbar.enabled` removed as it was only reliable on machines without a physical touchbar. Detection of whether or not a touchbar exists (real *or* virtual) can be determined with [touchbar.exists](#exists)
+* `touchbar.touchbarReal` renamed [touchbar.physical](#physical)
+* `touchbar.size` added with notes about when it will be 0.
+
+**v08.0alpha**
 
 Version 0.8.0alpha moves the creation of the virtual touchbar into the submodule `hs._asm.undocumented.touchbar.virtual` and will require any use of `hs._asm.undocumented.touchbar.new()` to be changed to `hs._asm.undocumented.touchbar.virtual.new()`. This should *only* affect the usage of the virtual touchbar, either for display on the screen or for taking images of the touchbar itself.
 
 The [Examples](Examples/) affected have been updated to reflect this change.
 
-Again, Version 0.7.6alpha will be the *last* version which included the virtual touchbar in the main module.
+Version 0.7.6alpha will be the *last* version which included the virtual touchbar in the main module.
 
 - - -
 
 This module and its submodules provide support for manipulating the Apple Touch Bar on newer Macbook Pro laptops. For machines that do not have a touchbar, the `hs._asm.undocumented.touchbar.virtual` submodule provides a method for mimicing one on screen.
 
-Use of this module with virtual touchbar devices other than `hs._asm.undocumented.touchbar.virtual` has not been tested extensively, but should work. I have not run into any problems or issues with [Duet Display](https://www.duetdisplay.com), but specific testing has been minimal.
+Use of this module and its submodules in conunction with other third party applications that can create the virtual touchbar has not been tested specifically, but *should* work. I have not run into any problems or issues while using [Duet Display](https://www.duetdisplay.com), but haven't performed extensive testing.
 
 This module and it's submodules require a mac that is running macOS 10.12.1 build 16B2657 or newer. If you wish to use this module in an environment where the end-user's machine may not have a new enough macOS release version, you should always check the value of [hs._asm.undocumented.touchbar.supported](#supported) before trying to create the Touch Bar and provide your own fallback or message. By supplying the argument `true` to this function, the user will be prompted to upgrade if necessary.
 
@@ -60,30 +68,66 @@ touchbar = require("hs._asm.undocumented.touchbar")
 
 
 ##### Module Functions
-* <a href="#enabled">touchbar.enabled([state]) -> boolean</a>
+* <a href="#exists">touchbar.exists() -> boolean</a>
+* <a href="#physical">touchbar.physical() -> boolean</a>
 * <a href="#supported">touchbar.supported([showLink]) -> boolean</a>
-* <a href="#touchbarReal">touchbar.touchbarReal() -> boolean</a>
 
 - - -
 
 ### Module Functions
 
-<a name="enabled"></a>
+<a name="exists"></a>
 ~~~lua
-touchbar.enabled([state]) -> boolean
+touchbar.exists() -> boolean
 ~~~
-Get or set whether or not the Touch Bar can be used by applications.
+Returns whether or not the touchbar exists on this machine, real *or* virtual.
 
 Parameters:
- * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).
+ * None
 
 Returns:
- * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value
+ * a boolean value indicating whether or a not the touchbar exists (true) or does not exist (false) on this machine.
 
 Notes:
- * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.
+ * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it is *currently* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.
 
- * Setting this to false will remove all application items from the Touch Bar.
+ * On machines with a physical touchbar (see also [hs._asm.undocumented.touchbar.physical](#physical)), this function will always return true.
+ * On machines without a physical touchbar, this function will return true if a virtual touchbar has been created with the `hs._asm.undocumented.touchbar.virtual` submodule or through another third-party application.
+
+- - -
+
+<a name="physical"></a>
+~~~lua
+touchbar.physical() -> boolean
+~~~
+Returns whether or not the machine has a physical touchbar
+
+Parameters:
+ * None
+
+Returns:
+ * a boolean value indicating whether or not the machine has a physical touchbar (true) or does not (false)
+
+Notes:
+ * To determine if the machine is currently maintaining a touchbar, physical *or* virtual, use [hs._asm.undocumented.touchbar.exists](#exists).
+
+- - -
+
+<a name="size"></a>
+~~~lua
+touchbar.size() -> sizeTable
+~~~
+Returns the size of the touchbar as a size table
+
+Parameters:
+ * None
+
+Returns:
+ * a table containing key-value fields for the height (h) and width (w) of the touchbar
+
+Notes:
+ * On a machine without a physical touchbar, both height and width will be 0 if no virtual touchbar is currently active.
+   * You can use this as a way to test if a third party application has created a virtual touchbar as long as you check **before** `hs._asm.undocumented.touchbar.virtual.new` has been used; once the virtual submodule's `new` function has been invoked, the height and width will match the virtual touchbar that Hammerspoon has created.
 
 - - -
 
@@ -101,23 +145,6 @@ Returns:
 
 Notes:
  * the link in the prompt is https://support.apple.com/kb/dl1897
-
-- - -
-
-<a name="touchbarReal"></a>
-~~~lua
-touchbar.touchbarReal() -> boolean
-~~~
-Returns whether or not the machine has a physical touchbar
-
-Parameters:
- * None
-
-Returns:
- * a boolean value indicating whether or not the machine has a physical touchbar (true) or does not (false)
-
-Notes:
- * To determine if the machine is currently maintaining a touchbar, physical *or* virtual, use [hs._asm.undocumented.touchbar.enabled](#enabled) with no arguments.
 
 - - -
 

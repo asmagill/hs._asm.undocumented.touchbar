@@ -2,8 +2,9 @@
 @import LuaSkin ;
 
 // Weakly linking to these function *should* allow loading this file on machines running 10.12.1 or earlier, but I'll need to find one to test
-extern BOOL   DFRSetStatus(int) __attribute__((weak_import)) ;
+// extern BOOL   DFRSetStatus(int) __attribute__((weak_import)) ;
 extern int    DFRGetStatus(void) __attribute__((weak_import)) ;
+extern CGSize DFRGetScreenSize(void) __attribute__((weak_import)) ;
 
 static BOOL is_supported() { return NSClassFromString(@"DFRElement") ? YES : NO ; }
 
@@ -39,41 +40,35 @@ static int touchbar_supported(lua_State *L) {
     return 1 ;
 }
 
-/// hs._asm.undocumented.touchbar.enabled([state]) -> boolean
+/// hs._asm.undocumented.touchbar.exists() -> boolean
 /// Function
-/// Get or set whether or not the Touch Bar can be used by applications.
+/// Returns whether or not the touchbar exists on this machine, real *or* virtual.
 ///
 /// Parameters:
-///  * `state` - an optional boolean specifying whether applications can put items into the touch bar (true) or if this is limited only to the system items (false).
+///  * None
 ///
 /// Returns:
-///  * if an argument is provided, returns a boolean indicating whether or not the change was successful; otherwise returns the current value
+///  * a boolean value indicating whether or a not the touchbar exists (true) or does not exist (false) on this machine.
 ///
 /// Notes:
-///  * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it *is* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.
+///  * Checking the value of this function does not indicate whether or not the machine *can* support the Touch Bar but rather if it is *currently* supporting the Touch Bar; Use [hs._asm.undocumented.touchbar.supported](#supported) to check whether or not the machine *can* support the Touch Bar.
 ///
-///  * Setting this to false will remove all application items from the Touch Bar.
-static int touchbar_enabled(lua_State *L) {
+///  * On machines with a physical touchbar (see also [hs._asm.undocumented.touchbar.physical](#physical)), this function will always return true.
+///  * On machines without a physical touchbar, this function will return true if a virtual touchbar has been created with the `hs._asm.undocumented.touchbar.virtual` submodule or through another third-party application.
+static int touchbar_exists(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
-    if ((DFRGetStatus != NULL) && (DFRSetStatus != NULL)) {
-        // best guess right now is that DFRStatus value is a bitfield
-        //      bit 0 indicates if touchbar is physical (1) or virtual  (0)
-        //      bit 1 indicates if touchbar is enabled  (1) or disabled (0)
-        // but I stress this is *only* a guess based upon a very small sample size
-        if (lua_gettop(L) == 1) {
-            lua_pushboolean(L, DFRSetStatus(lua_toboolean(L, 1) ? (DFRGetStatus() | 2) : (DFRGetStatus() & ~2))) ;
-        } else {
-            lua_pushboolean(L, ((DFRGetStatus() & 2) == 2) ? YES : NO) ;
-        }
+    if (DFRGetStatus != NULL) {
+        // mimics _DFRAvailable as disassembled from the DFRFoundation with Hopper Disassembler
+        lua_pushboolean(L, (DFRGetStatus() > 0) ? YES : NO) ;
     } else {
         lua_pushboolean(L, NO) ;
     }
     return 1 ;
 }
 
-/// hs._asm.undocumented.touchbar.touchbarReal() -> boolean
+/// hs._asm.undocumented.touchbar.physical() -> boolean
 /// Function
 /// Returns whether or not the machine has a physical touchbar
 ///
@@ -84,17 +79,42 @@ static int touchbar_enabled(lua_State *L) {
 ///  * a boolean value indicating whether or not the machine has a physical touchbar (true) or does not (false)
 ///
 /// Notes:
-///  * To determine if the machine is currently maintaining a touchbar, physical *or* virtual, use [hs._asm.undocumented.touchbar.enabled](#enabled) with no arguments.
+///  * To determine if the machine is currently maintaining a touchbar, physical *or* virtual, use [hs._asm.undocumented.touchbar.exists](#exists).
 static int touchbar_hasPhysicalTouchbar(lua_State *L) {
     LuaSkin *skin = [LuaSkin shared] ;
     [skin checkArgs:LS_TBREAK] ;
     if (DFRGetStatus != NULL) {
-        lua_pushboolean(L, ((DFRGetStatus() | 1) == 1)) ;
+        lua_pushboolean(L, ((DFRGetStatus() & 1) == 1)) ;
     } else {
         lua_pushboolean(L, NO) ;
     }
     return 1 ;
 }
+
+
+/// hs._asm.undocumented.touchbar.size() -> sizeTable
+/// Function
+/// Returns the size of the touchbar as a size table
+///
+/// Parameters:
+///  * None
+///
+/// Returns:
+///  * a table containing key-value fields for the height (h) and width (w) of the touchbar
+///
+/// Notes:
+///  * On a machine without a physical touchbar, noth height and width will be 0 if no virtual touchbar is currently active.
+///    * You can use this as a way to test if a third party application has created a virtual touchbar as long as you check **before** `hs._asm.undocumented.touchbar.virtual.new` has been used; once the virtual submodule's `new` function has been invoked, the height and width will match the virtual touchbar that Hammerspoon has created.
+static int touchbar_size(lua_State __unused *L) {
+    LuaSkin *skin = [LuaSkin shared] ;
+    [skin checkArgs:LS_TBREAK] ;
+    CGSize touchbarSize = CGSizeZero ;
+    if (DFRGetScreenSize != NULL) touchbarSize = DFRGetScreenSize() ;
+
+    [skin pushNSSize:NSSizeFromCGSize(touchbarSize)] ;
+    return 1 ;
+}
+
 
 // placeholder
 static int touchbar_fakeNew(lua_State *L) {
@@ -108,11 +128,12 @@ static int touchbar_fakeNew(lua_State *L) {
 
 // Functions for returned object when module loads
 static luaL_Reg moduleLib[] = {
-    {"supported",    touchbar_supported},
-    {"enabled",      touchbar_enabled},
-    {"touchbarReal", touchbar_hasPhysicalTouchbar},
+    {"supported", touchbar_supported},
+    {"exists",    touchbar_exists},
+    {"physical",  touchbar_hasPhysicalTouchbar},
+    {"size",      touchbar_size},
 
-    {"_fakeNew",     touchbar_fakeNew},
+    {"_fakeNew",  touchbar_fakeNew},
 
     {NULL,        NULL}
 };
