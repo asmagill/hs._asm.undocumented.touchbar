@@ -117,13 +117,16 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
 
-// @interface HSASMColorPickerTouchBarItem : NSCandidateListTouchBarItem
+// @interface HSASMColorPickerTouchBarItem : NSColorPickerTouchBarItem
 // @property            int          callbackRef ;
 // @property            int          selfRefCount ;
 // @property            int          visibilityCallbackRef ;
 // @property (readonly) TB_ItemTypes itemType ;
 // @end
 
+// NSPickerTouchBarItem ?
+// NSButtonTouchBarItem ?
+// NSStepperTouchBarItem ?
 // NSScrubber ?
 
 @implementation CanvasActionCell
