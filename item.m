@@ -293,9 +293,9 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 
 - (void)performCallback:(id)sender {
 //     [LuaSkin logInfo:[NSString stringWithFormat:@"%s:performCallback: %@", USERDATA_TAG, [NSThread callStackSymbols]]] ;
-    if (_callbackRef != LUA_NOREF) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            LuaSkin   *skin = [LuaSkin shared] ;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_callbackRef != LUA_NOREF) {
+            LuaSkin   *skin = [LuaSkin sharedWithState:NULL] ;
             lua_State *L    = skin.L ;
             [skin pushLuaRef:refTable ref:self->_callbackRef] ;
             [skin pushNSObject:self] ;
@@ -304,14 +304,14 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                 [skin logError:[NSString stringWithFormat:@"%s:callback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
                 lua_pop(L, 1) ;
             }
-        }) ;
-    }
+        }
+    }) ;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
         if (_visibilityCallbackRef != LUA_NOREF) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:NULL] ;
             lua_State *L  = [skin L] ;
             // KVO seems to be slow and may not invoke the callback until after gc during a reload
             if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
@@ -406,7 +406,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
         if (_visibilityCallbackRef != LUA_NOREF) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:NULL] ;
             lua_State *L  = [skin L] ;
             // KVO seems to be slow and may not invoke the callback until after gc during a reload
             if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
@@ -450,9 +450,9 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 }
 
 - (void)performCallbackWithValue:(id)value {
-    if (_callbackRef != LUA_NOREF) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            LuaSkin   *skin = [LuaSkin shared] ;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_callbackRef != LUA_NOREF) {
+            LuaSkin   *skin = [LuaSkin sharedWithState:NULL] ;
             lua_State *L    = skin.L ;
             [skin pushLuaRef:refTable ref:self->_callbackRef] ;
             [skin pushNSObject:self] ;
@@ -461,8 +461,8 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                 [skin logError:[NSString stringWithFormat:@"%s:sliderCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
                 lua_pop(L, 1) ;
             }
-        }) ;
-    }
+        }
+    }) ;
 }
 
 - (void)performSlideCallback:(HSASMSliderTouchBarItem *)sender {
@@ -482,7 +482,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
         if (_visibilityCallbackRef != LUA_NOREF) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:NULL] ;
             lua_State *L  = [skin L] ;
             // KVO seems to be slow and may not invoke the callback until after gc during a reload
             if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
@@ -515,7 +515,7 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 /// Returns:
 ///  * a touchbarItemObject or nil if an error occurs
 static int grouptouchbaritem_newGroup(lua_State *L) {
-    LuaSkin      *skin       = [LuaSkin shared] ;
+    LuaSkin      *skin       = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
     NSString *identifier = (lua_gettop(L) == 1) ? [skin toNSObjectAtIndex:1] : [[NSUUID UUID] UUIDString] ;
 
@@ -541,7 +541,7 @@ static int grouptouchbaritem_newGroup(lua_State *L) {
 /// Notes:
 ///  * The slider object will expand to fill as much space as it can within the touchbar.
 static int slidertouchbaritem_newSlider(lua_State *L) {
-    LuaSkin      *skin       = [LuaSkin shared] ;
+    LuaSkin      *skin       = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
     NSString *identifier = (lua_gettop(L) == 1) ? [skin toNSObjectAtIndex:1] : [[NSUUID UUID] UUIDString] ;
 
@@ -569,7 +569,7 @@ static int slidertouchbaritem_newSlider(lua_State *L) {
 ///  * The touch bar object will be proportionally resized so that it has the same height as the touchbar if it does not already. Currently this is 30, but in case future models differ from this, you can get the current value with from `hs._asm.undocumented.touchbar.size`.
 ///  * If canvas callbacks for `mouseDown`, `mouseUp`, `mouseEnterExit`, and `mouseMove` are enabled, the canvas callback will be invoked as if the left mouse button had been used.
 static int customtouchbaritem_newCanvas(lua_State *L) {
-    LuaSkin      *skin       = [LuaSkin shared] ;
+    LuaSkin      *skin       = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, "hs.canvas", LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
 
     NSView   *canvas     = [skin toNSObjectAtIndex:1] ;
@@ -623,7 +623,7 @@ static int customtouchbaritem_newCanvas(lua_State *L) {
 ///  * You can change the button's image with [hs._asm.undocumented.touchbar.item:image](#title) only if you initially assign one with this constructor.
 ///  * If you intend to allow customization of the touch bar, it is highly recommended that you specify an identifier, since the UUID will change each time the item is regenerated (when Hammerspoon reloads or restarts).
 static int customtouchbaritem_newButton(lua_State *L) {
-    LuaSkin      *skin       = [LuaSkin shared] ;
+    LuaSkin      *skin       = [LuaSkin sharedWithState:L] ;
     NSString     *title      = nil ;
     NSImage      *image      = nil ;
     NSString     *identifier = [[NSUUID UUID] UUIDString] ;
@@ -714,7 +714,7 @@ static int customtouchbaritem_newButton(lua_State *L) {
 ///
 ///  * See also the notes for [hs._asm.undocumented.touchbar.item:isVisible](#isVisible) and `hs._asm.undocumented.touchbar.bar.visibilityCallback`.
 static int touchbaritem_visibilityCallback(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -753,7 +753,7 @@ static int touchbaritem_visibilityCallback(lua_State *L) {
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 ///  * When this image is clicked on, the touchbar item's callback, if set, will receive the string "minimum" as it's second argument.
 static int slidertouchbaritem_minImage(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY, LS_TBREAK] ;
     HSASMSliderTouchBarItem *obj   = [skin toNSObjectAtIndex:1] ;
     NSImage                 *image = nil ;
@@ -791,7 +791,7 @@ static int slidertouchbaritem_minImage(lua_State *L) {
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 ///  * When this image is clicked on, the touchbar item's callback, if set, will receive the string "maximum" as it's second argument.
 static int slidertouchbaritem_maxImage(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY, LS_TBREAK] ;
     HSASMSliderTouchBarItem *obj   = [skin toNSObjectAtIndex:1] ;
     NSImage                 *image = nil ;
@@ -828,7 +828,7 @@ static int slidertouchbaritem_maxImage(lua_State *L) {
 /// Notes:
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 static int slidertouchbaritem_minValue(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMSliderTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -858,7 +858,7 @@ static int slidertouchbaritem_minValue(lua_State *L) {
 /// Notes:
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 static int slidertouchbaritem_maxValue(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMSliderTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -889,7 +889,7 @@ static int slidertouchbaritem_maxValue(lua_State *L) {
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newSlider](#newSlider) constructor.
 ///  * The slider touchbar items callback, if set, will not be invoked if you use this method to change the slider's value.
 static int slidertouchbaritem_currentValue(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMSliderTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -921,7 +921,7 @@ static int slidertouchbaritem_currentValue(lua_State *L) {
 ///  * The group touchbar item's callback, if set, is never invoked; instead the callback for the items within the group item is invoked when the item is touched.
 ///  * See also [hs._asm.undocumented.touchbar.item:groupItems](#groupItems)
 static int grouptouchbaritem_groupTouchBar(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK | LS_TVARARG] ;
     HSASMGroupTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -949,7 +949,7 @@ static int grouptouchbaritem_groupTouchBar(lua_State *L) {
 /// Returns:
 ///  * if an argument is provided, returns the touchbarItem object; otherwise returns the current value
 static int touchbaritem_customizationLabel(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     NSCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -981,7 +981,7 @@ static int touchbaritem_customizationLabel(lua_State *L) {
 ///  * This method will generate an error if an image was not provided when the object was created.
 ///  * Setting the image to nil will remove the image and shrink the button, but not as tightly as the button would appear if it had been initially created without an image at all.
 static int customtouchbaritem_image(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TANY | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1018,7 +1018,7 @@ static int customtouchbaritem_image(lua_State *L) {
 ///  * This method will generate an error if a title was not provided when the object was created.
 ///  * Setting the title to nil will remove the title and shrink the button, but not as tightly as the button would appear if it had been initially created without a title at all.
 static int customtouchbaritem_title(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1064,7 +1064,7 @@ static int customtouchbaritem_title(lua_State *L) {
 /// Notes:
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructor.
 static int customtouchbaritem_canvasWidth(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1097,7 +1097,7 @@ static int customtouchbaritem_canvasWidth(lua_State *L) {
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructor.
 ///  * To specify that no background color should be displayed when the canvas touchbar item is in an active state, specify a color with an alpha value of 0, e.g. `{ alpha = 0 }`.
 static int customtouchbaritem_canvasHighlightColor(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1137,7 +1137,7 @@ static int customtouchbaritem_canvasHighlightColor(lua_State *L) {
 /// Notes:
 ///  * This method will generate an error if the touchbar item was not created with the [hs._asm.undocumented.touchbar.item.newButton](#newButton) or [hs._asm.undocumented.touchbar.item.newCanvas](#newCanvas) constructors.
 static int customtouchbaritem_enabled(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1179,7 +1179,7 @@ static int customtouchbaritem_enabled(lua_State *L) {
 ///    * `mini`    - presents the image and/or title of the button without a rounded rectangle background. Takes up less space then `regular`.
 ///    * `small`   - presents the image and/or title of the button without a rounded rectangle background. Takes up less space in the touchbar then `mini`.
 static int customtouchbaritem_size(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1228,8 +1228,8 @@ static int customtouchbaritem_size(lua_State *L) {
 ///
 /// Returns:
 ///  * the identifier for the item as a string
-static int touchbaritem_identifier(__unused lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int touchbaritem_identifier(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     NSTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1250,8 +1250,8 @@ static int touchbaritem_identifier(__unused lua_State *L) {
 ///
 /// Notes:
 ///  * other types may be added in future updates.
-static int touchbaritem_itemType(__unused lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int touchbaritem_itemType(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
     [skin pushNSObject:itemTypeStrings[@(obj.itemType)]] ;
@@ -1271,7 +1271,7 @@ static int touchbaritem_itemType(__unused lua_State *L) {
 /// Notes:
 ///  * If the bar that the item is assigned to has been visible at some point in the past, and the item was visible at that time, this method will return true even if the bar is not currently visible. If you want to know if the item is visible in the touch bar display *right now*, you should use `reallyVisible = bar:isVisible() and item:isVisible()`
 static int touchbaritem_isVisible(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     NSTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1293,7 +1293,7 @@ static int touchbaritem_isVisible(lua_State *L) {
 ///  * If their are more items to be presented in the touch bar display than space permits, items with a lower visibility priority will be hidden first.
 ///  * Some predefined visibility values are defined in [hs._asm.undocumented.touchbar.item.visibilityPriorities](#visibilityPriorities), though others are allowed. The default priority for an item object is `hs._asm.undocumented.touchbar.item.visibilityPriorities.normal`.
 static int touchbaritem_visibilityPriority(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     NSTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1335,7 +1335,7 @@ static int touchbaritem_visibilityPriority(lua_State *L) {
 ///        * if the image assigned with [hs._asm.undocumented.touchbar.item:sliderMaxImage](#sliderMaxImage) is touched, the string "maximum".
 ///        * if the slider knob is moved to a new position, returns a number between [hs._asm.undocumented.touchbar.item:sliderMin](#sliderMin) and [hs._asm.undocumented.touchbar.item:sliderMax](#sliderMax) indicating the new position.
 static int touchbaritem_callback(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMCustomTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1376,7 +1376,7 @@ static int touchbaritem_callback(lua_State *L) {
 ///
 ///  * This method uses undocumented functions and/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
 static int touchbaritem_systemTray(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN, LS_TBREAK] ;
     NSTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -1434,7 +1434,7 @@ static int pushHSASMCustomTouchBarItem(lua_State *L, id obj) {
 }
 
 id toHSASMCustomTouchBarItemFromLua(lua_State *L, int idx) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMCustomTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
         value = get_objectFromUserdata(__bridge HSASMCustomTouchBarItem, L, idx, USERDATA_TAG) ;
@@ -1456,7 +1456,7 @@ static int pushHSASMGroupTouchBarItem(lua_State *L, id obj) {
 }
 
 id toHSASMGroupTouchBarItemFromLua(lua_State *L, int idx) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMGroupTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
         value = get_objectFromUserdata(__bridge HSASMGroupTouchBarItem, L, idx, USERDATA_TAG) ;
@@ -1478,7 +1478,7 @@ static int pushHSASMSliderTouchBarItem(lua_State *L, id obj) {
 }
 
 id toHSASMSliderTouchBarItemFromLua(lua_State *L, int idx) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMSliderTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
         value = get_objectFromUserdata(__bridge HSASMSliderTouchBarItem, L, idx, USERDATA_TAG) ;
@@ -1492,7 +1492,7 @@ id toHSASMSliderTouchBarItemFromLua(lua_State *L, int idx) {
 #pragma mark - Hammerspoon/Lua Infrastructure
 
 static int userdata_tostring(lua_State* L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     NSTouchBarItem *obj = [skin toNSObjectAtIndex:1] ;
     NSString *title = obj.identifier ;
     [skin pushNSObject:[NSString stringWithFormat:@"%s: %@ (%p)", USERDATA_TAG, title, lua_topointer(L, 1)]] ;
@@ -1503,7 +1503,7 @@ static int userdata_eq(lua_State* L) {
 // can't get here if at least one of us isn't a userdata type, and we only care if both types are ours,
 // so use luaL_testudata before the macro causes a lua error
     if (luaL_testudata(L, 1, USERDATA_TAG) && luaL_testudata(L, 2, USERDATA_TAG)) {
-        LuaSkin *skin = [LuaSkin shared] ;
+        LuaSkin *skin = [LuaSkin sharedWithState:L] ;
         NSTouchBarItem *obj1 = [skin toNSObjectAtIndex:1] ;
         NSTouchBarItem *obj2 = [skin toNSObjectAtIndex:2] ;
         lua_pushboolean(L, [obj1 isEqualTo:obj2]) ;
@@ -1518,7 +1518,7 @@ static int userdata_gc(lua_State* L) {
     if (obj) {
         obj.selfRefCount-- ;
         if (obj.selfRefCount == 0) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:L] ;
             obj.callbackRef = [skin luaUnref:refTable ref:obj.callbackRef] ;
             if (obj.visibilityCallbackRef != LUA_NOREF) {
                 obj.visibilityCallbackRef = [skin luaUnref:refTable ref:obj.visibilityCallbackRef] ;
@@ -1591,7 +1591,7 @@ static luaL_Reg moduleLib[] = {
 // };
 
 int luaopen_hs__asm_undocumented_touchbar_item(lua_State* L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     itemTypeStrings = TB_ItemTypeStrings ;
 
     if (NSClassFromString(@"NSTouchBarItem")) {

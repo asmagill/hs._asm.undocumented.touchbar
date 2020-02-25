@@ -210,7 +210,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 
 - (void)callbackWith:(NSString *)message {
     if (_callbackRef != LUA_NOREF) {
-        LuaSkin *skin = [LuaSkin shared] ;
+        LuaSkin *skin = [LuaSkin sharedWithState:NULL] ;
         [skin pushLuaRef:refTable ref:_callbackRef] ;
         [skin pushNSObject:self] ;
         [skin pushNSObject:message] ;
@@ -247,8 +247,8 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
 ///
 /// Notes:
 ///  * The most common reason a touchbarObject cannot be created is if your macOS version is not new enough. Type the following into your Hammerspoon console to check: `require("hs._asm.undocumented.touchbar").supported(true)`.
-static int touchbar_virtual_new(__unused lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int touchbar_virtual_new(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBREAK] ;
 
     // All examples of the virtual touchbar set this to 2 to enable, but sampling a few users machines that come with the touchbar,
@@ -275,7 +275,7 @@ static int touchbar_virtual_new(__unused lua_State *L) {
 /// Notes:
 ///  * This method does nothing if the window is already visible.
 static int touchbar_virtual_show(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
     NSTimeInterval    duration  = (lua_gettop(L) == 2) ? lua_tonumber(L, 2) : 0.0 ;
@@ -311,7 +311,7 @@ static int touchbar_virtual_show(lua_State *L) {
 ///  * This method is invoked automatically with `true` when [hs._asm.undocumented.touchbar.virtual:show](#show) is invoked and with `false` when [hs._asm.undocumented.touchbar.virtual:hide](#hide) is invoked.
 ///  * In order for [hs._asm.undocumented.touchbar.virtual:image](#image) to be able to capture a snapshot of the touchbar, the virtual touchbar must be currently receiving updates; this method will allow you to enable the updates even if the virtual touchbar is not currently visible on the screen (for example, if you have a physical touchbar on your laptop and do not wish to clutter the display with a duplicate of what you already posses).
 static int touchbar_virtual_streaming(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
     if (lua_toboolean(L, 2)) {
@@ -337,7 +337,7 @@ static int touchbar_virtual_streaming(lua_State *L) {
 ///  * This method does nothing if the window is already hidden.
 ///  * The value used in the sample code referenced in the module header is 0.1.
 static int touchbar_virtual_hide(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
     NSTimeInterval    duration  = (lua_gettop(L) == 2) ? lua_tonumber(L, 2) : 0.0 ;
@@ -375,7 +375,7 @@ static int touchbar_virtual_hide(lua_State *L) {
 /// Notes:
 ///  * A point table is a table with at least `x` and `y` key-value pairs which specify the coordinates on the computer screen where the window should be moved to.  Hammerspoon considers the upper left corner of the primary screen to be { x = 0.0, y = 0.0 }.
 static int touchbar_virtual_topLeft(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -406,7 +406,7 @@ static int touchbar_virtual_topLeft(lua_State *L) {
 ///  * A frame table is a table with at least `x`, `y`, `h` and `w` key-value pairs which specify the coordinates on the computer screen of the window and its width (w) and height(h).
 ///  * This allows you to get the frame so that you can include its height and width in calculations - it does not allow you to change the size of the touch bar window itself.
 static int touchbar_virtual_getFrame(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -427,7 +427,7 @@ static int touchbar_virtual_getFrame(lua_State *L) {
 /// Returns:
 ///  * a boolean specifying whether the touch bar window is visible (true) or not (false).
 static int touchbar_virtual_isVisible(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
     lua_pushboolean(L, touchbar.visible) ;
@@ -444,7 +444,7 @@ static int touchbar_virtual_isVisible(lua_State *L) {
 /// Returns:
 ///  * if a value is provided, returns the touchbarObject; otherwise returns the current value
 static int touchbar_virtual_inactiveAlpha(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -473,7 +473,7 @@ static int touchbar_virtual_inactiveAlpha(lua_State *L) {
 ///  * While the touch bar is movable, actions which require moving the mouse while clicking on the touch bar are not accessible.
 ///  * See also [hs._asm.undocumented.touchbar.virtual:acceptsMouseEvents](#acceptsMouseEvents).
 static int touchbar_virtual_movable(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -500,7 +500,7 @@ static int touchbar_virtual_movable(lua_State *L) {
 ///  * This method can be used to prevent mouse clicks in the touch bar from triggering the touch bar buttons.
 ///  * This can be useful when [hs._asm.undocumented.touchbar.virtual:movable](#movable) is set to true to prevent accidentally triggering an action.
 static int touchbar_virtual_acceptsMouseEvents(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -526,7 +526,7 @@ static int touchbar_virtual_acceptsMouseEvents(lua_State *L) {
 /// Notes:
 ///  * The visual effect of this method is to change the border color around the touch bar -- the touch bar itself remains the color as defined by the application which is providing the current touch bar items for display.
 static int touchbar_virtual_backgroundColor(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -565,7 +565,7 @@ static int touchbar_virtual_backgroundColor(lua_State *L) {
 ///      * `obj`     - the touchbarObject the callback is for
 ///      * `message` - the message to the callback, in this case "didEnter"
 static int touchbar_virtual_setCallback(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
 
@@ -599,7 +599,7 @@ static int touchbar_virtual_setCallback(lua_State *L) {
 ///
 ///    * Once streaming has been enabled and the first image is received, subsequent image requests will continue to succeed until streaming is stopped with [hs._asm.undocumented.touchbar.virtual:streaming(false)](#streaming) or [hs._asm.undocumented.touchbar.virtual:hide()](#hide).
 static int touchbar_virtual_asImage(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
     ASMTouchBarView   *touchBarView = touchbar.contentView ;
@@ -640,7 +640,7 @@ static int pushASMTouchBarWindow(lua_State *L, id obj) {
 }
 
 id toASMTouchBarWindowFromLua(lua_State *L, int idx) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     ASMTouchBarWindow *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
         value = get_objectFromUserdata(__bridge ASMTouchBarWindow, L, idx, USERDATA_TAG) ;
@@ -654,7 +654,7 @@ id toASMTouchBarWindowFromLua(lua_State *L, int idx) {
 #pragma mark - Hammerspoon/Lua Infrastructure
 
 static int userdata_tostring(lua_State* L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
 //     ASMTouchBarWindow *obj = [skin luaObjectAtIndex:1 toClass:"ASMTouchBarWindow"] ;
     NSString *title = @"TouchBar" ;
     [skin pushNSObject:[NSString stringWithFormat:@"%s: %@ (%p)", USERDATA_TAG, title, lua_topointer(L, 1)]] ;
@@ -665,7 +665,7 @@ static int userdata_eq(lua_State* L) {
 // can't get here if at least one of us isn't a userdata type, and we only care if both types are ours,
 // so use luaL_testudata before the macro causes a lua error
     if (luaL_testudata(L, 1, USERDATA_TAG) && luaL_testudata(L, 2, USERDATA_TAG)) {
-        LuaSkin *skin = [LuaSkin shared] ;
+        LuaSkin *skin = [LuaSkin sharedWithState:L] ;
         ASMTouchBarWindow *obj1 = [skin luaObjectAtIndex:1 toClass:"ASMTouchBarWindow"] ;
         ASMTouchBarWindow *obj2 = [skin luaObjectAtIndex:2 toClass:"ASMTouchBarWindow"] ;
         lua_pushboolean(L, [obj1 isEqualTo:obj2]) ;
@@ -680,7 +680,7 @@ static int userdata_gc(lua_State* L) {
     if (obj) {
         obj.selfRefCount-- ;
         if (obj.selfRefCount == 0) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:L] ;
             obj.callbackRef = [skin luaUnref:refTable ref:obj.callbackRef] ;
             // not sure what else to do to cleanup... if I do [obj close] on the window, it crashes...
             obj.alphaValue = 0.0 ;
@@ -736,8 +736,8 @@ static const luaL_Reg module_metaLib[] = {
     {NULL,   NULL}
 } ;
 
-int luaopen_hs__asm_undocumented_touchbar_virtual(lua_State* __unused L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+int luaopen_hs__asm_undocumented_touchbar_virtual(lua_State* L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     refTable = [skin registerLibraryWithObject:USERDATA_TAG
                                      functions:moduleLib
                                  metaFunctions:module_metaLib

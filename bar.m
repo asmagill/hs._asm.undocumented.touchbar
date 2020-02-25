@@ -107,7 +107,7 @@ static NSDictionary *builtInIdentifiers ;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == myKVOContext && [keyPath isEqualToString:@"visible"]) {
         if (_visibilityCallbackRef != LUA_NOREF) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:NULL] ;
             lua_State *L  = [skin L] ;
             // KVO seems to be slow and may not invoke the callback until after gc during a reload
             if ([skin pushLuaRef:refTable ref:_visibilityCallbackRef] != LUA_TNIL) {
@@ -141,7 +141,7 @@ static BOOL itemWithIdentifierExists(NSTouchBar *bar, NSString *identifier, BOOL
 }
 
 static NSArray *validateIdentifierArray(lua_State *L, NSTouchBar *bar, int idx) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     NSArray *identifiers = [skin toNSObjectAtIndex:idx] ;
     __block NSString *errMsg = nil ;
     if ([identifiers isKindOfClass:[NSArray class]]) {
@@ -178,7 +178,7 @@ static NSArray *validateIdentifierArray(lua_State *L, NSTouchBar *bar, int idx) 
 /// Returns:
 ///  * a new bar object
 static int touchbar_new(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBREAK] ;
     HSASMTouchBar *obj = [[HSASMTouchBar alloc] init] ;
     if (obj) {
@@ -204,8 +204,8 @@ static int touchbar_new(lua_State *L) {
 ///
 ///  * The customization panel allows modification of the current bar visible for the macOS application triggering the request within that applications resolver chain -- as such, it can only modify touchbar's attached to the Hammerspoon console or webview objects.
 ///  * The customization panel cannot modify modally displayed bar objects.
-static int touchbar_toggleCustomization(__unused lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int touchbar_toggleCustomization(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBREAK] ;
     [NSApp toggleTouchBarCustomizationPalette:nil] ;
     return 0 ;
@@ -228,7 +228,7 @@ static int touchbar_toggleCustomization(__unused lua_State *L) {
 ///  * It does *NOT* reliably change when when the system dismiss button is used (when the second argument to [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` is true (or not present)).  This is being investigated but at present no workaround is known.
 
 static int touchbar_isVisible(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     lua_pushboolean(L, obj.visible) ;
@@ -247,8 +247,8 @@ static int touchbar_isVisible(lua_State *L) {
 ///
 /// Notes:
 ///  * If the user has not customized the bar, the list of identifiers will match the list provided by [hs._asm.undocumented.touchbar.bar:defaultIdentifiers()](#defaultIdentifiers).
-static int touchbar_itemIdentifiers(__unused lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int touchbar_itemIdentifiers(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     [skin pushNSObject:obj.itemIdentifiers] ;
@@ -265,7 +265,7 @@ static int touchbar_itemIdentifiers(__unused lua_State *L) {
 /// Returns:
 ///  * If an argument is provided, returns the barObject; otherwise returns the current value.
 static int touchbar_customizationIdentifier(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -296,7 +296,7 @@ static int touchbar_customizationIdentifier(lua_State *L) {
 ///
 ///  * the identifier specified must belong to a touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).
 static int touchbar_principalItemIdentifier(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -332,7 +332,7 @@ static int touchbar_principalItemIdentifier(lua_State *L) {
 ///
 ///  * the identifier specified must belong to a touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems).
 static int touchbar_escapeKeyReplacementItemIdentifier(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -366,7 +366,7 @@ static int touchbar_escapeKeyReplacementItemIdentifier(lua_State *L) {
 /// Notes:
 ///  * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).
 static int touchbar_customizationAllowedItemIdentifiers(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -391,7 +391,7 @@ static int touchbar_customizationAllowedItemIdentifiers(lua_State *L) {
 /// Notes:
 ///  * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).
 static int touchbar_customizationRequiredItemIdentifiers(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -416,7 +416,7 @@ static int touchbar_customizationRequiredItemIdentifiers(lua_State *L) {
 /// Notes:
 ///  * the identifiers specified must belong to touchbar items already assigned to the bar object with [hs._asm.undocumented.touchbar.bar:templateItems](#templateItems) or one of the built in identifier values defined in [hs._asm.undocumented.touchbar.bar.builtInIdentifiers](#builtInIdentifiers).
 static int touchbar_defaultItemIdentifiers(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -441,7 +441,7 @@ static int touchbar_defaultItemIdentifiers(lua_State *L) {
 /// Notes:
 ///  * only the identifiers of items assigned by this method can be used by the other methods in this module that use string identifiers in their arguments.
 static int touchbar_templateItems(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TTABLE | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
     if (lua_gettop(L) == 1) {
@@ -497,7 +497,7 @@ static int touchbar_templateItems(lua_State *L) {
 /// Returns:
 ///  * the touchbarItem object for the item specified or nil if no such item has been assigned to the bar.
 static int touchbar_itemForIdentifier(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TSTRING, LS_TBREAK] ;
     NSTouchBar *obj        = [skin toNSObjectAtIndex:1] ;
     NSString   *identifier = [skin toNSObjectAtIndex:2] ;
@@ -532,7 +532,7 @@ static int touchbar_itemForIdentifier(lua_State *L) {
 ///  * This callback is invoked when the [hs._asm.undocumented.touchbar.bar:dismissModalBar](#dismissModalBar) or [hs._asm.undocumented.touchbar.bar:minimizeModalBar](#minimizeModalBar) methods are used.
 ///  * This callback is *NOT* invoked when the system dismiss button is used (when the second argument to [hs._asm.undocumented.touchbar.bar:presentModalBar](#presentModalBar) or `hs._asm.undocumented.touchbar.item:presentModalBar` is true (or not present)). This is being investigated but at present no workaround is known.
 static int touchbar_visibilityCallback(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TFUNCTION | LS_TNIL | LS_TOPTIONAL, LS_TBREAK] ;
     HSASMTouchBar *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -577,7 +577,7 @@ static int touchbar_visibilityCallback(lua_State *L) {
 ///
 ///  * This method uses undocumented functions and/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
 static int touchbar_presentSystemModalFunctionBar(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK | LS_TVARARG] ;
     NSTouchBar *obj        = [skin toNSObjectAtIndex:1] ;
     BOOL       closeBox    = YES ;
@@ -618,7 +618,7 @@ static int touchbar_presentSystemModalFunctionBar(lua_State *L) {
 ///
 ///  * This method uses undocumented functions and/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
 static int touchbar_dismissSystemModalFunctionBar(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     NSTouchBar *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -649,7 +649,7 @@ static int touchbar_dismissSystemModalFunctionBar(lua_State *L) {
 ///
 ///  * This method uses undocumented functions and/or framework methods and is not guaranteed to work with future updates to macOS. It has currently been tested with 10.12.6.
 static int touchbar_minimizeSystemModalFunctionBar(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TBREAK] ;
     NSTouchBar *obj = [skin toNSObjectAtIndex:1] ;
 
@@ -676,8 +676,8 @@ static int touchbar_minimizeSystemModalFunctionBar(lua_State *L) {
 ///
 /// The following is ignored for modally displayed bars, so it's effects are still being evaluated; documentation will be updated when nested bars can be tested and more fully understood within the context of the Hammerspoon console and webview.
 ///  * otherItemsProxy - provides a place for nested bars to display items
-static int push_builtInTouchBarItems(__unused lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int push_builtInTouchBarItems(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     builtInIdentifiers = @{
         @"smallSpace"      : NSTouchBarItemIdentifierFixedSpaceSmall,
         @"largeSpace"      : NSTouchBarItemIdentifierFixedSpaceLarge,
@@ -703,7 +703,7 @@ static int pushHSASMTouchBar(lua_State *L, id obj) {
 }
 
 id toHSASMTouchBarFromLua(lua_State *L, int idx) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMTouchBar *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
         value = get_objectFromUserdata(__bridge HSASMTouchBar, L, idx, USERDATA_TAG) ;
@@ -717,7 +717,7 @@ id toHSASMTouchBarFromLua(lua_State *L, int idx) {
 #pragma mark - Hammerspoon/Lua Infrastructure
 
 static int userdata_tostring(lua_State* L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
 //     HSASMTouchBar *obj = [skin luaObjectAtIndex:1 toClass:"HSASMTouchBar"] ;
 //     NSString *title = ... ;
 //     [skin pushNSObject:[NSString stringWithFormat:@"%s: %@ (%p)", USERDATA_TAG, title, lua_topointer(L, 1)]] ;
@@ -729,7 +729,7 @@ static int userdata_eq(lua_State* L) {
 // can't get here if at least one of us isn't a userdata type, and we only care if both types are ours,
 // so use luaL_testudata before the macro causes a lua error
     if (luaL_testudata(L, 1, USERDATA_TAG) && luaL_testudata(L, 2, USERDATA_TAG)) {
-        LuaSkin *skin = [LuaSkin shared] ;
+        LuaSkin *skin = [LuaSkin sharedWithState:L] ;
         HSASMTouchBar *obj1 = [skin luaObjectAtIndex:1 toClass:"HSASMTouchBar"] ;
         HSASMTouchBar *obj2 = [skin luaObjectAtIndex:2 toClass:"HSASMTouchBar"] ;
         lua_pushboolean(L, [obj1 isEqualTo:obj2]) ;
@@ -744,7 +744,7 @@ static int userdata_gc(lua_State* L) {
     if (obj) {
         obj.selfRefCount-- ;
         if (obj.selfRefCount == 0) {
-            LuaSkin *skin = [LuaSkin shared] ;
+            LuaSkin *skin = [LuaSkin sharedWithState:L] ;
             if (obj.visibilityCallbackRef != LUA_NOREF) {
                 obj.visibilityCallbackRef = [skin luaUnref:refTable ref:obj.visibilityCallbackRef] ;
                 [obj removeObserver:obj forKeyPath:@"visible" context:myKVOContext] ;
@@ -803,7 +803,7 @@ static luaL_Reg moduleLib[] = {
 // };
 
 int luaopen_hs__asm_undocumented_touchbar_bar(lua_State* L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
 
     if (NSClassFromString(@"NSTouchBar")) {
         refTable = [skin registerLibraryWithObject:USERDATA_TAG

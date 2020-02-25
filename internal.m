@@ -21,7 +21,7 @@ static BOOL is_supported() { return NSClassFromString(@"DFRElement") ? YES : NO 
 /// Notes:
 ///  * the link in the prompt is https://support.apple.com/kb/dl1897
 static int touchbar_supported(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
     BOOL showDialog = (lua_gettop(L) == 1) ? (BOOL)lua_toboolean(L, 1) : NO ;
     lua_pushboolean(L, is_supported()) ;
@@ -56,7 +56,7 @@ static int touchbar_supported(lua_State *L) {
 ///  * On machines with a physical touchbar (see also [hs._asm.undocumented.touchbar.physical](#physical)), this function will always return true.
 ///  * On machines without a physical touchbar, this function will return true if a virtual touchbar has been created with the `hs._asm.undocumented.touchbar.virtual` submodule or through another third-party application.
 static int touchbar_exists(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBOOLEAN | LS_TOPTIONAL, LS_TBREAK] ;
 
     if (DFRGetStatus != NULL) {
@@ -81,7 +81,7 @@ static int touchbar_exists(lua_State *L) {
 /// Notes:
 ///  * To determine if the machine is currently maintaining a touchbar, physical *or* virtual, use [hs._asm.undocumented.touchbar.exists](#exists).
 static int touchbar_hasPhysicalTouchbar(lua_State *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBREAK] ;
     if (DFRGetStatus != NULL) {
         lua_pushboolean(L, ((DFRGetStatus() & 1) == 1)) ;
@@ -105,8 +105,8 @@ static int touchbar_hasPhysicalTouchbar(lua_State *L) {
 /// Notes:
 ///  * On a machine without a physical touchbar, noth height and width will be 0 if no virtual touchbar is currently active.
 ///    * You can use this as a way to test if a third party application has created a virtual touchbar as long as you check **before** `hs._asm.undocumented.touchbar.virtual.new` has been used; once the virtual submodule's `new` function has been invoked, the height and width will match the virtual touchbar that Hammerspoon has created.
-static int touchbar_size(lua_State __unused *L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+static int touchbar_size(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TBREAK] ;
     CGSize touchbarSize = CGSizeZero ;
     if (DFRGetScreenSize != NULL) touchbarSize = DFRGetScreenSize() ;
@@ -138,8 +138,8 @@ static luaL_Reg moduleLib[] = {
     {NULL,        NULL}
 };
 
-int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* __unused L) {
-    LuaSkin *skin = [LuaSkin shared] ;
+int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin registerLibrary:moduleLib metaFunctions:nil] ;
 
     return 1;
