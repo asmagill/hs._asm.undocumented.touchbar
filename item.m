@@ -293,8 +293,8 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 
 - (void)performCallback:(id)sender {
 //     [LuaSkin logInfo:[NSString stringWithFormat:@"%s:performCallback: %@", USERDATA_TAG, [NSThread callStackSymbols]]] ;
-    if (_callbackRef != LUA_NOREF) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_callbackRef != LUA_NOREF) {
             LuaSkin   *skin = [LuaSkin shared] ;
             lua_State *L    = skin.L ;
             [skin pushLuaRef:refTable ref:self->_callbackRef] ;
@@ -304,8 +304,8 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                 [skin logError:[NSString stringWithFormat:@"%s:callback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
                 lua_pop(L, 1) ;
             }
-        }) ;
-    }
+        }
+    }) ;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -450,8 +450,8 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
 }
 
 - (void)performCallbackWithValue:(id)value {
-    if (_callbackRef != LUA_NOREF) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self->_callbackRef != LUA_NOREF) {
             LuaSkin   *skin = [LuaSkin shared] ;
             lua_State *L    = skin.L ;
             [skin pushLuaRef:refTable ref:self->_callbackRef] ;
@@ -461,8 +461,8 @@ static NSDictionary *itemTypeStrings ; // assigned in luaopen_hs__asm_undocument
                 [skin logError:[NSString stringWithFormat:@"%s:sliderCallback error:%s", USERDATA_TAG, lua_tostring(L, -1)]] ;
                 lua_pop(L, 1) ;
             }
-        }) ;
-    }
+        }
+    }) ;
 }
 
 - (void)performSlideCallback:(HSASMSliderTouchBarItem *)sender {
