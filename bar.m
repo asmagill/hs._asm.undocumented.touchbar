@@ -57,6 +57,8 @@ static NSDictionary *builtInIdentifiers ;
 - (void)setTemplateItems:(NSSet<NSTouchBarItem *> *)templateItems {
     NSSet *currentItems = self.templateItems ;
 
+    [LuaSkin logDebug:[NSString stringWithFormat:@"entered %s:setTemplateItems", USERDATA_TAG]] ;
+
 // This is because we want to access a property in another custom subclass but because both this class and
 // the one we want to access are in separate shared libraries, we can't access them directly at runtime.
 //
@@ -87,8 +89,6 @@ static NSDictionary *builtInIdentifiers ;
         }
     }] ;
 
-    [super setTemplateItems:templateItems] ;
-
     // increase the selfRefCount for the ones we've just set
     [templateItems enumerateObjectsUsingBlock:^(NSTouchBarItem *item, __unused BOOL *stop) {
         if ([item respondsToSelector:NSSelectorFromString(@"selfRefCount")]) {
@@ -102,6 +102,9 @@ static NSDictionary *builtInIdentifiers ;
             [LuaSkin logWarn:[NSString stringWithFormat:@"%s:setTemplateItems (increasing) - item %@ does not recognize selfRefCount", USERDATA_TAG, item]] ;
         }
     }] ;
+
+    [super setTemplateItems:templateItems] ;
+    [LuaSkin logDebug:[NSString stringWithFormat:@"exiting %s:setTemplateItems", USERDATA_TAG]] ;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
