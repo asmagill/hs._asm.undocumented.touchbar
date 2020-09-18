@@ -296,6 +296,32 @@ static int touchbar_virtual_show(lua_State *L) {
     return 1 ;
 }
 
+/// hs._asm.undocumented.touchbar.virtual:level([level]) -> touchbarObject | currentValue
+/// Method
+/// Get or set the window level for the virtual touchbar.
+///
+/// Parameters:
+///  * `level` - an optional integer, default 1500, specifying the new window level for the virtual touchbar. See `hs.canvas.windowLevels](#windowLevels` for the numeric values for standard window levels.
+///
+/// Returns:
+///  * If an argument is provided, the virtual touchbar object; otherwise the current value.
+static int touchbar_virtual_level(lua_State *L) {
+    LuaSkin *skin = [LuaSkin sharedWithState:L] ;
+    [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TINTEGER | LS_TOPTIONAL, LS_TBREAK] ;
+    ASMTouchBarWindow *touchbar = [skin toNSObjectAtIndex:1] ;
+
+    if (lua_gettop(L) == 1) {
+        lua_pushinteger(L, touchbar.level) ;
+    } else {
+        lua_Integer targetLevel = lua_tointeger(L, 2) ;
+
+        targetLevel = (targetLevel < CGWindowLevelForKey(kCGMinimumWindowLevelKey)) ? CGWindowLevelForKey(kCGMinimumWindowLevelKey) : ((targetLevel > CGWindowLevelForKey(kCGMaximumWindowLevelKey)) ? CGWindowLevelForKey(kCGMaximumWindowLevelKey) : targetLevel) ;
+        touchbar.level = targetLevel ;
+        lua_pushvalue(L, 1) ;
+    }
+
+    return 1 ;
+}
 
 /// hs._asm.undocumented.touchbar.virtual:streaming(state) -> touchbarObject
 /// Method
@@ -716,6 +742,7 @@ static const luaL_Reg userdata_metaLib[] = {
     {"acceptsMouseEvents", touchbar_virtual_acceptsMouseEvents},
     {"image",              touchbar_virtual_asImage},
     {"streaming",          touchbar_virtual_streaming},
+    {"level",              touchbar_virtual_level},
 
     {"__tostring",         userdata_tostring},
     {"__eq",               userdata_eq},
