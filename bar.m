@@ -19,6 +19,8 @@
 @import Cocoa ;
 @import LuaSkin ;
 
+@import ObjectiveC.runtime ;
+
 #import "TouchBar.h"
 
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.bar" ;
@@ -35,6 +37,80 @@ static NSDictionary *builtInIdentifiers ;
 // #define get_cfobjectFromUserdata(objType, L, idx, tag) *((objType *)luaL_checkudata(L, idx, tag))
 
 #pragma mark - Support Functions and Classes
+
+// Voodoo magic to swizzle _crashOnException because it seems that touchbar is sensitive (esp to
+// system wakeups) and throws exceptions even when it really shouldn't... see discussion at
+// https://github.com/asmagill/hs._asm.undocumented.touchbar/issues/1 and
+// https://nshipster.com/method-swizzling/
+@interface NSApplication (crashInterceptor)
++ (void)xxx_hammerspoon_SwizzleCrashOnException ;
+- (void)xxx_hammerspoon_crashOnException:(NSException *)exception ;
+@end
+
+@implementation NSApplication (crashInterceptor)
+
+// it's a fair bet that we don't have to worry about a race condition with _crashOnException
+// because if some thread is executing this method, Hammerspoon is already crashing. While swizzling
+// in a method invoked when this module is loaded rather then when Hammerspoon is first loaded
+// is not ideal, I only want this work around installed when it's actually needed, i.e. when the
+// touchbar module is being used. It's a trade-off and I hope I've judged things correctly -- we'll
+// see...
++ (void)xxx_hammerspoon_SwizzleCrashOnException {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class targetClass = [self class] ;
+
+        SEL        originalSelector       = NSSelectorFromString(@"_crashOnException:") ;
+        Method     originalMethod         = class_getInstanceMethod(targetClass, originalSelector) ;
+        IMP        originalImplementation = method_getImplementation(originalMethod) ;
+        const char *originalEncoding      = method_getTypeEncoding(originalMethod) ;
+
+        SEL        swizzledSelector       = @selector(xxx_hammerspoon_crashOnException:) ;
+        Method     swizzledMethod         = class_getInstanceMethod(targetClass, swizzledSelector) ;
+        IMP        swizzledImplementation = method_getImplementation(swizzledMethod) ;
+        const char *swizzledEncoding      = method_getTypeEncoding(swizzledMethod) ;
+
+        // will likely be false because originalSelector already exists, but just in case
+        // it goes away in a future macOS update (it is undocumented, after all) lets not
+        // crash when method_exchangeImplementations is invoked. True, this will end up
+        // having no effect then, but we're no worse off than before...
+        BOOL didAddMethod = class_addMethod(
+                                               targetClass,
+                                               originalSelector,
+                                               swizzledImplementation,
+                                               swizzledEncoding
+                                           ) ;
+
+        if (didAddMethod) {
+            class_replaceMethod(
+                targetClass,
+                swizzledSelector,
+                originalImplementation,
+                originalEncoding
+            ) ;
+            [LuaSkin logDebug:[NSString stringWithFormat:@"_crashOnException and xxx_hammerspoon_crashOnException added to %s (probably means this fix ineffective)", class_getName(targetClass)]] ;
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+            [LuaSkin logDebug:[NSString stringWithFormat:@"_crashOnException and xxx_hammerspoon_crashOnException swizzled in %s", class_getName(targetClass)]] ;
+        }
+    });
+}
+
+-(void) xxx_hammerspoon_crashOnException:(NSException *)exception {
+    if ([exception.debugDescription rangeOfString:@"NSFunctionRow"].location != NSNotFound) {
+        NSLog(@"_crashOnException override: %@", exception.debugDescription) ;
+        // may remove this later, but for now I want to be able to see when this occurs in the HS
+        // console and not just when I happen to be running the Console application
+        [LuaSkin logWarn:[NSString stringWithFormat:@"%s._crashOnException override: %@", USERDATA_TAG, exception.debugDescription]] ;
+        return ;
+    } else {
+        // note that since we "swizzled" _crashOnException, this name now points to the
+        // priginal version
+        [self xxx_hammerspoon_crashOnException:exception] ;
+    }
+}
+
+@end
 
 @interface HSASMTouchBar : NSTouchBar <NSTouchBarDelegate>
 @property int selfRefCount ;
@@ -806,6 +882,8 @@ static luaL_Reg moduleLib[] = {
 // };
 
 int luaopen_hs__asm_undocumented_touchbar_bar(lua_State* L) {
+    [NSApplication xxx_hammerspoon_SwizzleCrashOnException] ;
+
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
 
     if (NSClassFromString(@"NSTouchBar")) {
