@@ -305,6 +305,9 @@ static int touchbar_virtual_show(lua_State *L) {
 ///
 /// Returns:
 ///  * If an argument is provided, the virtual touchbar object; otherwise the current value.
+///
+/// Notes:
+///  * If you hide the Dock and want the virtual touchbar at the bottom of the screen, setting the touchbar window level to 20 allows the Dock to appear over the touchbar when you move the mouse pointer down far enough to raise the Dock.
 static int touchbar_virtual_level(lua_State *L) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     [skin checkArgs:LS_TUSERDATA, USERDATA_TAG, LS_TNUMBER | LS_TINTEGER | LS_TOPTIONAL, LS_TBREAK] ;
