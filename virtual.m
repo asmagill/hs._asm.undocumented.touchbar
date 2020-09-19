@@ -102,7 +102,7 @@ static inline NSRect RectWithFlippedYCoordinate(NSRect theRect) {
             IOSurfaceUnlock(surface, kIOSurfaceLockReadOnly, nil) ;
 
             if (self->_context == NULL) {
-                [LuaSkin logDebug:@"%s:unable to create context for touchbar image creation"] ;
+                [LuaSkin logDebug:[NSString stringWithFormat:@"%s:unable to create context for touchbar image creation", USERDATA_TAG]] ;
             }
 
         }) ;
