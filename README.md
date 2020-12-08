@@ -1,24 +1,6 @@
 hs._asm.undocumented.touchbar
 =============================
 
-***Changelog (primarily breaking or significant changes)***
-
-**v08.1alpha**
-
-* `touchbar.enabled` removed as it was only reliable on machines without a physical touchbar. Detection of whether or not a touchbar exists (real *or* virtual) can be determined with [touchbar.exists](#exists)
-* `touchbar.touchbarReal` renamed [touchbar.physical](#physical)
-* `touchbar.size` added with notes about when it will be 0.
-
-**v08.0alpha**
-
-Version 0.8.0alpha moves the creation of the virtual touchbar into the submodule `hs._asm.undocumented.touchbar.virtual` and will require any use of `hs._asm.undocumented.touchbar.new()` to be changed to `hs._asm.undocumented.touchbar.virtual.new()`. This should *only* affect the usage of the virtual touchbar, either for display on the screen or for taking images of the touchbar itself.
-
-The [Examples](Examples/) affected have been updated to reflect this change.
-
-Version 0.7.6alpha will be the *last* version which included the virtual touchbar in the main module.
-
-- - -
-
 This module and its submodules provide support for manipulating the Apple Touch Bar on newer Macbook Pro laptops. For machines that do not have a touchbar, the `hs._asm.undocumented.touchbar.virtual` submodule provides a method for mimicing one on screen.
 
 Use of this module and its submodules in conunction with other third party applications that can create the virtual touchbar has not been tested specifically, but *should* work. I have not run into any problems or issues while using [Duet Display](https://www.duetdisplay.com), but haven't performed extensive testing.
@@ -34,6 +16,8 @@ This module is very experimental and is still under development, so the exact fu
  Special thanks to @cmsj and @latenitefilms for code samples and bugfixes, and to @randomeizer, @Madd0g, and @medranocalvo for tests and reports. This is by no means a conclusive list, and if I've left anyone out, it's totally on me -- feel free to poke me with a (virtual) stick 😜.
 
 ### Installation
+
+*See https://github.com/asmagill/hammerspoon_asm/blob/master/README.md for details about building this module as a Universal library*
 
 A precompiled version of this module can be found in this directory with a name along the lines of `touchbar-v0.x.tar.gz`. This can be installed by downloading the file and then expanding it as follows:
 
