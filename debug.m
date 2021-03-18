@@ -5,8 +5,8 @@
 
 #import "TouchBar.h"
 
-// static const char *USERDATA_TAG = "hs._asm.undocumented.touchbar.debug" ;
-static int refTable = LUA_NOREF;
+static const char *USERDATA_TAG = "hs._asm.undocumented.touchbar.debug" ;
+static LSRefTable refTable = LUA_NOREF;
 
 #pragma mark - Support Functions and Classes
 
@@ -61,7 +61,7 @@ static luaL_Reg moduleLib[] = {
 
 int luaopen_hs__asm_undocumented_touchbar_debug(lua_State* L) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
-    refTable = [skin registerLibrary:moduleLib metaFunctions:nil] ;
+    refTable = [skin registerLibrary:USERDATA_TAG functions:moduleLib metaFunctions:nil] ;
 
     return 1;
 }

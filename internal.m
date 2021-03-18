@@ -1,6 +1,8 @@
 @import Cocoa ;
 @import LuaSkin ;
 
+static const char *USERDATA_TAG = "hs._asm.undocumented.touchbar" ;
+
 // Weakly linking to these function *should* allow loading this file on machines running 10.12.1 or earlier, but I'll need to find one to test
 // extern BOOL   DFRSetStatus(int) __attribute__((weak_import)) ;
 extern int    DFRGetStatus(void) __attribute__((weak_import)) ;
@@ -140,7 +142,7 @@ static luaL_Reg moduleLib[] = {
 
 int luaopen_hs__asm_undocumented_touchbar_internal(lua_State* L) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
-    [skin registerLibrary:moduleLib metaFunctions:nil] ;
+    [skin registerLibrary:USERDATA_TAG functions:moduleLib metaFunctions:nil] ;
 
     return 1;
 }

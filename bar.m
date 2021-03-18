@@ -25,7 +25,7 @@
 
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.bar" ;
 static const char * const ITEM_UD_TAG  = "hs._asm.undocumented.touchbar.item" ;
-static int refTable = LUA_NOREF;
+static LSRefTable refTable = LUA_NOREF;
 
 // establish a unique context for identifying our observers
 static void *myKVOContext = &myKVOContext ; // See http://nshipster.com/key-value-observing/

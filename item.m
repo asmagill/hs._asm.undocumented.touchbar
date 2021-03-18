@@ -25,7 +25,7 @@
 
 static const char * const USERDATA_TAG = "hs._asm.undocumented.touchbar.item" ;
 static const char * const BAR_UD_TAG   = "hs._asm.undocumented.touchbar.bar" ;
-static int refTable = LUA_NOREF;
+static LSRefTable refTable = LUA_NOREF;
 
 static NSInteger virtualMouseEventCounter = 0 ;
 
