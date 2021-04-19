@@ -1433,7 +1433,7 @@ static int pushHSASMCustomTouchBarItem(lua_State *L, id obj) {
     return 1;
 }
 
-id toHSASMCustomTouchBarItemFromLua(lua_State *L, int idx) {
+static id toHSASMCustomTouchBarItemFromLua(lua_State *L, int idx) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMCustomTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
@@ -1455,7 +1455,7 @@ static int pushHSASMGroupTouchBarItem(lua_State *L, id obj) {
     return 1;
 }
 
-id toHSASMGroupTouchBarItemFromLua(lua_State *L, int idx) {
+static id toHSASMGroupTouchBarItemFromLua(lua_State *L, int idx) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMGroupTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
@@ -1477,7 +1477,7 @@ static int pushHSASMSliderTouchBarItem(lua_State *L, id obj) {
     return 1;
 }
 
-id toHSASMSliderTouchBarItemFromLua(lua_State *L, int idx) {
+static id toHSASMSliderTouchBarItemFromLua(lua_State *L, int idx) {
     LuaSkin *skin = [LuaSkin sharedWithState:L] ;
     HSASMSliderTouchBarItem *value ;
     if (luaL_testudata(L, idx, USERDATA_TAG)) {
