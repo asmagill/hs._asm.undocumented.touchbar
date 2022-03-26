@@ -81,4 +81,16 @@ extern void DFRSystemModalShowsCloseBoxWhenFrontMost(BOOL flag) ;
 
 @end
 
+// MARK: NSFunctionRow
+@interface NSFunctionRow: NSObject
++ (void)markActiveFunctionRowsAsDimmed:(BOOL)arg1;
++ (nonnull NSArray *)_topLevelFunctionRowViews;
++ (nonnull NSArray *)activeFunctionRows;
++ (void)removeActiveFunctionRow:(nonnull NSFunctionRow *)arg1;
++ (void)addActiveFunctionRow:(nonnull NSFunctionRow *)arg1;
+
++ (void)xxx_hammerspoon_SwizzleMarkActiveFunctionRowsAsDimmed:(BOOL)arg1 ;
+- (void)xxx_hammerspoon_markActiveFunctionRowsAsDimmed:(BOOL)arg1 ;
+@end
+
 #pragma clang diagnostic pop
