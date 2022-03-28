@@ -43,7 +43,7 @@ static NSDictionary *builtInIdentifiers ;
 + (void)xxx_hammerspoon_SwizzleMarkActiveFunctionRowsAsDimmed {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        Class targetClass = [self class] ;
+        Class targetClass = objc_getMetaClass(class_getName([self class])) ;
 
         SEL        originalSelector       = NSSelectorFromString(@"markActiveFunctionRowsAsDimmed:") ;
         Method     originalMethod         = class_getInstanceMethod(targetClass, originalSelector) ;
@@ -69,15 +69,15 @@ static NSDictionary *builtInIdentifiers ;
                 originalImplementation,
                 originalEncoding
             ) ;
-            [LuaSkin logDebug:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed added to %s (probably means this fix ineffective)", class_getName(targetClass)]] ;
+            [LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed added to %s (probably means this fix ineffective)", class_getName(targetClass)]] ;
         } else {
             method_exchangeImplementations(originalMethod, swizzledMethod);
-            [LuaSkin logDebug:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed swizzled in %s", class_getName(targetClass)]] ;
+            [LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed swizzled in %s", class_getName(targetClass)]] ;
         }
     });
 }
 
--(void) xxx_hammerspoon_markActiveFunctionRowsAsDimmed:(BOOL)dimmed {
++(void) xxx_hammerspoon_markActiveFunctionRowsAsDimmed:(BOOL)dimmed {
     [LuaSkin logWarn:[NSString stringWithFormat:@"%s.markActiveFunctionRowsAsDimmed Triggered: %@", USERDATA_TAG, dimmed]] ;
 }
 
