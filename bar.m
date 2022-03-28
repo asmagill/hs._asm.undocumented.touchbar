@@ -38,7 +38,7 @@ static NSDictionary *builtInIdentifiers ;
 
 #pragma mark - Support Functions and Classes
 
-@implementation NSFunctionRow: NSObject
+@implementation NSFunctionRow (crashInterceptor)
 
 + (void)xxx_hammerspoon_SwizzleMarkActiveFunctionRowsAsDimmed {
     static dispatch_once_t onceToken;
@@ -55,8 +55,25 @@ static NSDictionary *builtInIdentifiers ;
         IMP        swizzledImplementation = method_getImplementation(swizzledMethod) ;
         const char *swizzledEncoding      = method_getTypeEncoding(swizzledMethod) ;
 
-        method_exchangeImplementations(originalMethod, swizzledMethod);
-        [LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed swizzled in %s", class_getName(targetClass)]] ;
+        BOOL didAddMethod = class_addMethod(
+                                               targetClass,
+                                               originalSelector,
+                                               swizzledImplementation,
+                                               swizzledEncoding
+                                           ) ;
+        
+         if (didAddMethod) {
+            class_replaceMethod(
+                targetClass,
+                swizzledSelector,
+                originalImplementation,
+                originalEncoding
+            ) ;
+            [LuaSkin logDebug:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed added to %s (probably means this fix ineffective)", class_getName(targetClass)]] ;
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+            [LuaSkin logDebug:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed swizzled in %s", class_getName(targetClass)]] ;
+        }
     });
 }
 
