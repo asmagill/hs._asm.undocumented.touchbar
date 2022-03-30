@@ -78,7 +78,7 @@ static NSDictionary *builtInIdentifiers ;
 }
 
 +(void) xxx_hammerspoon_markActiveFunctionRowsAsDimmed:(BOOL)dimmed {
-    [LuaSkin logWarn:[NSString stringWithFormat:@"%s.markActiveFunctionRowsAsDimmed Triggered: %@", USERDATA_TAG, dimmed]] ;
+    [LuaSkin logWarn:[NSString stringWithFormat:@"%s.markActiveFunctionRowsAsDimmed Triggered: %@", USERDATA_TAG, dimmed ? @"YES" : @"NO"]] ;
 }
 
 @end
