@@ -61,7 +61,7 @@ static NSDictionary *builtInIdentifiers ;
                                                swizzledImplementation,
                                                swizzledEncoding
                                            ) ;
-        
+
          if (didAddMethod) {
             class_replaceMethod(
                 targetClass,
@@ -69,16 +69,16 @@ static NSDictionary *builtInIdentifiers ;
                 originalImplementation,
                 originalEncoding
             ) ;
-            [LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed added to %s (probably means this fix ineffective)", class_getName(targetClass)]] ;
+            //[LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed added to %s (probably means this fix ineffective)", class_getName(targetClass)]] ;
         } else {
             method_exchangeImplementations(originalMethod, swizzledMethod);
-            [LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed swizzled in %s", class_getName(targetClass)]] ;
+            //[LuaSkin logWarn:[NSString stringWithFormat:@"markActiveFunctionRowsAsDimmed and xxx_hammerspoon_markActiveFunctionRowsAsDimmed swizzled in %s", class_getName(targetClass)]] ;
         }
     });
 }
 
 +(void) xxx_hammerspoon_markActiveFunctionRowsAsDimmed:(BOOL)dimmed {
-    [LuaSkin logWarn:[NSString stringWithFormat:@"%s.markActiveFunctionRowsAsDimmed Triggered: %@", USERDATA_TAG, dimmed ? @"YES" : @"NO"]] ;
+    //[LuaSkin logWarn:[NSString stringWithFormat:@"%s.markActiveFunctionRowsAsDimmed Triggered: %@", USERDATA_TAG, dimmed ? @"YES" : @"NO"]] ;
 }
 
 @end
